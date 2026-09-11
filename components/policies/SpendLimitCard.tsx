@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Badge, Button, Card, CardHeader, Input, PasskeyPrompt, Text, useToast } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  Input,
+  PasskeyPrompt,
+  Text,
+  useToast,
+} from "@/components/ui";
 import { useTheme } from "@/hooks/useTheme";
 import { useSignPolicyChange } from "@/hooks/usePolicies";
 import { useAuthStore } from "@/store/auth";
@@ -35,7 +44,10 @@ export function SpendLimitCard() {
       // SDK: policy.set_spend_limit(token, amount, window) — wired once exposed.
       setCurrent({ amount, window });
       setAmount("");
-      toast.success("Spend limit set", `${amount} XLM per ${WINDOWS.find((w) => w.value === window)?.label}`);
+      toast.success(
+        "Spend limit set",
+        `${amount} XLM per ${WINDOWS.find((w) => w.value === window)?.label}`
+      );
     } catch (err) {
       if (!(err instanceof PasskeyCancelledError)) toast.error("Update failed", errorMessage(err));
     }
@@ -51,12 +63,22 @@ export function SpendLimitCard() {
 
       {current ? (
         <View
-          style={[styles.current, { backgroundColor: alpha(colors.success, 0.08), borderColor: alpha(colors.success, 0.3), borderRadius: radius.lg }]}
+          style={[
+            styles.current,
+            {
+              backgroundColor: alpha(colors.success, 0.08),
+              borderColor: alpha(colors.success, 0.3),
+              borderRadius: radius.lg,
+            },
+          ]}
         >
           <Ionicons name="shield-checkmark" size={18} color={colors.success} />
           <Text variant="small" style={{ flex: 1 }}>
-            Current limit: <Text variant="small" weight="700">{current.amount} XLM</Text> /{" "}
-            {WINDOWS.find((w) => w.value === current.window)?.label}
+            Current limit:{" "}
+            <Text variant="small" weight="700">
+              {current.amount} XLM
+            </Text>{" "}
+            / {WINDOWS.find((w) => w.value === current.window)?.label}
           </Text>
           <Badge variant="success">Enforcing</Badge>
         </View>
@@ -114,7 +136,13 @@ export function SpendLimitCard() {
               })}
             </View>
           </View>
-          <Button size="lg" fullWidth disabled={!valid} onPress={submit} icon={<Ionicons name="finger-print" size={18} color={colors.primaryForeground} />}>
+          <Button
+            size="lg"
+            fullWidth
+            disabled={!valid}
+            onPress={submit}
+            icon={<Ionicons name="finger-print" size={18} color={colors.primaryForeground} />}
+          >
             Set spend limit
           </Button>
         </View>
@@ -127,5 +155,12 @@ const styles = StyleSheet.create({
   stack: { gap: 14 },
   chips: { flexDirection: "row", gap: 8 },
   chip: { flex: 1, height: 42, alignItems: "center", justifyContent: "center", borderWidth: 1.5 },
-  current: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderWidth: 1, marginBottom: 16 },
+  current: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 12,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
 });

@@ -55,7 +55,8 @@ export function SessionKeysCard() {
       setScope("");
       setHours("24");
     } catch (err) {
-      if (!(err instanceof PasskeyCancelledError)) toast.error("Authorisation failed", errorMessage(err));
+      if (!(err instanceof PasskeyCancelledError))
+        toast.error("Authorisation failed", errorMessage(err));
     }
   };
 
@@ -89,7 +90,11 @@ export function SessionKeysCard() {
           icon={<Ionicons name="key-outline" size={18} color={colors.primary} />}
           style={{ paddingHorizontal: 18, paddingTop: 18, marginBottom: 6 }}
           action={
-            <Button size="sm" onPress={() => setOpen(true)} icon={<Ionicons name="add" size={16} color={colors.primaryForeground} />}>
+            <Button
+              size="sm"
+              onPress={() => setOpen(true)}
+              icon={<Ionicons name="add" size={16} color={colors.primaryForeground} />}
+            >
               New
             </Button>
           }
@@ -118,15 +123,27 @@ export function SessionKeysCard() {
             return (
               <ListRow
                 key={s.sessionId}
-                icon={<Ionicons name="key" size={16} color={expired ? colors.mutedForeground : colors.primary} />}
+                icon={
+                  <Ionicons
+                    name="key"
+                    size={16}
+                    color={expired ? colors.mutedForeground : colors.primary}
+                  />
+                }
                 iconTone={expired ? "muted" : "primary"}
                 title={s.scope.length > 20 ? shortAddress(s.scope, 8, 6) : s.scope}
                 mono
-                subtitle={expired ? "Expired" : `Expires ${formatDistanceToNow(new Date(s.expiresAt), { addSuffix: true })}`}
+                subtitle={
+                  expired
+                    ? "Expired"
+                    : `Expires ${formatDistanceToNow(new Date(s.expiresAt), { addSuffix: true })}`
+                }
                 last={i === sessions.length - 1}
                 right={
                   <View style={styles.rowRight}>
-                    <Badge variant={expired ? "secondary" : "success"}>{expired ? "Inactive" : "Active"}</Badge>
+                    <Badge variant={expired ? "secondary" : "success"}>
+                      {expired ? "Inactive" : "Active"}
+                    </Badge>
                     <Button
                       size="sm"
                       variant="destructive"
@@ -153,7 +170,13 @@ export function SessionKeysCard() {
         description="Authorise an ephemeral key scoped to specific contracts."
         footer={
           !create.isPending ? (
-            <Button size="lg" fullWidth disabled={!valid} onPress={submit} icon={<Ionicons name="finger-print" size={18} color={colors.primaryForeground} />}>
+            <Button
+              size="lg"
+              fullWidth
+              disabled={!valid}
+              onPress={submit}
+              icon={<Ionicons name="finger-print" size={18} color={colors.primaryForeground} />}
+            >
               Authorise key
             </Button>
           ) : null
@@ -179,7 +202,11 @@ export function SessionKeysCard() {
               value={hours}
               onChangeText={setHours}
               hint="Between 1 and 720 hours."
-              error={hours !== "" && !(hoursNum >= 1 && hoursNum <= 720) ? "Must be 1–720 hours" : undefined}
+              error={
+                hours !== "" && !(hoursNum >= 1 && hoursNum <= 720)
+                  ? "Must be 1–720 hours"
+                  : undefined
+              }
             />
             <Text variant="small" tone="muted">
               You can revoke the key at any time from this screen.
