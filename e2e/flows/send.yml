@@ -1,0 +1,15 @@
+# Requires a signed-in session (run after a manual passkey login on the device).
+appId: dev.rayos.wallet.development
+---
+- launchApp
+- assertVisible:
+    id: "balance-value"
+- tapOn:
+    id: "send-button"
+- assertVisible: "Send XLM"
+- tapOn: "Recipient address"
+- inputText: "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGHIJKLMNOPQRSTUVW"
+- tapOn: "Amount"
+- inputText: "1"
+- assertVisible:
+    id: "send-continue"

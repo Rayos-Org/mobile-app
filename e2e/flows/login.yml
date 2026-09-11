@@ -1,0 +1,11 @@
+appId: dev.rayos.wallet.development
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "cta-login"
+- assertVisible: "Welcome back"
+- assertVisible:
+    id: "login-passkey"
+- tapOn: "Create a new wallet instead"
+- assertVisible: "Create your Guardian Wallet"

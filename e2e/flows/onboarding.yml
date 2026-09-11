@@ -1,0 +1,18 @@
+# Maestro flow — onboarding up to the passkey ceremony.
+# Biometrics can't be driven from Maestro on simulators, so the flow asserts the
+# native prompt is reached; device-lab runs continue manually from here.
+appId: dev.rayos.wallet.development
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Your wallet,"
+- tapOn:
+    id: "cta-create"
+- assertVisible: "Create your Guardian Wallet"
+- tapOn:
+    id: "display-name-input"
+- inputText: "Maestro Test"
+- tapOn: "Continue"
+- assertVisible: "Create passkey"
+- assertVisible:
+    id: "create-passkey"

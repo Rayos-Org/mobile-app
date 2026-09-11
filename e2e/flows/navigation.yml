@@ -1,0 +1,24 @@
+# Requires a signed-in session.
+appId: dev.rayos.wallet.development
+---
+- launchApp
+- tapOn:
+    id: "tab-policies"
+- assertVisible: "Spend limit"
+- tapOn: "Sessions"
+- assertVisible: "Session keys"
+- tapOn: "Allow-list"
+- assertVisible: "Contract allow-list"
+- tapOn:
+    id: "tab-guardians"
+- assertVisible: "Recovery guardians"
+- tapOn:
+    id: "tab-settings"
+- assertVisible: "Appearance"
+- tapOn: "Dark"
+- tapOn: "Light"
+- tapOn: "System"
+- tapOn:
+    id: "tab-wallet"
+- assertVisible:
+    id: "balance-value"
