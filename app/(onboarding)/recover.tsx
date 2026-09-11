@@ -39,7 +39,9 @@ export default function RecoverScreen() {
   const [proposalId, setProposalId] = useState("");
 
   const propose = useProposeRecovery();
-  const { data: status, isLoading: statusLoading } = useRecoveryProposal(step === 3 ? proposalId : null);
+  const { data: status, isLoading: statusLoading } = useRecoveryProposal(
+    step === 3 ? proposalId : null
+  );
 
   const addressValid = isStellarAddress(walletAddress);
 
@@ -49,7 +51,10 @@ export default function RecoverScreen() {
     setStep(2);
     try {
       const userHandle = newUserHandle();
-      const options = await getRegistrationOptions(userHandle, `Recovery key · ${addr.slice(0, 6)}`);
+      const options = await getRegistrationOptions(
+        userHandle,
+        `Recovery key · ${addr.slice(0, 6)}`
+      );
       const credential = await createCredential(options);
       await verifyRegistration(userHandle, credential);
 
@@ -58,7 +63,8 @@ export default function RecoverScreen() {
       setStep(3);
       toast.success("Recovery proposed", "Share the link with your guardians.");
     } catch (err) {
-      if (!(err instanceof PasskeyCancelledError)) toast.error("Recovery failed", errorMessage(err));
+      if (!(err instanceof PasskeyCancelledError))
+        toast.error("Recovery failed", errorMessage(err));
       setStep(1);
     } finally {
       setProcessing(false);
@@ -78,7 +84,15 @@ export default function RecoverScreen() {
       <Card glass>
         <View style={styles.stack}>
           <View style={styles.titleRow}>
-            <View style={[styles.disc, { backgroundColor: alpha(colors.primary, 0.12), borderColor: alpha(colors.primary, 0.3) }]}>
+            <View
+              style={[
+                styles.disc,
+                {
+                  backgroundColor: alpha(colors.primary, 0.12),
+                  borderColor: alpha(colors.primary, 0.3),
+                },
+              ]}
+            >
               <Ionicons name="shield-half-outline" size={22} color={colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
@@ -91,11 +105,28 @@ export default function RecoverScreen() {
 
           {step === 1 && (
             <>
-              <View style={[styles.info, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.lg }]}>
-                <Ionicons name="information-circle-outline" size={18} color={colors.mutedForeground} />
+              <View
+                style={[
+                  styles.info,
+                  {
+                    backgroundColor: colors.muted,
+                    borderColor: colors.border,
+                    borderRadius: radius.lg,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="information-circle-outline"
+                  size={18}
+                  color={colors.mutedForeground}
+                />
                 <Text variant="small" tone="muted" style={{ flex: 1 }}>
-                  This creates a <Text variant="small" weight="700">new passkey</Text> on this device and proposes it as
-                  your wallet’s signer. Your guardians must approve before it takes effect.
+                  This creates a{" "}
+                  <Text variant="small" weight="700">
+                    new passkey
+                  </Text>{" "}
+                  on this device and proposes it as your wallet’s signer. Your guardians must
+                  approve before it takes effect.
                 </Text>
               </View>
               <Input
@@ -106,26 +137,46 @@ export default function RecoverScreen() {
                 autoCapitalize="characters"
                 autoCorrect={false}
                 mono
-                error={walletAddress.length > 0 && !addressValid ? "Enter a valid 56-character Stellar address" : undefined}
+                error={
+                  walletAddress.length > 0 && !addressValid
+                    ? "Enter a valid 56-character Stellar address"
+                    : undefined
+                }
               />
               <Button
                 size="lg"
                 fullWidth
                 disabled={!addressValid}
                 onPress={start}
-                iconRight={<Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />}
+                iconRight={
+                  <Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />
+                }
               >
                 Start recovery
               </Button>
             </>
           )}
 
-          {step === 2 && <PasskeyPrompt processing={processing} message="Creating a new passkey on this device…" />}
+          {step === 2 && (
+            <PasskeyPrompt
+              processing={processing}
+              message="Creating a new passkey on this device…"
+            />
+          )}
 
           {step === 3 &&
             (isComplete ? (
               <View style={styles.done}>
-                <View style={[styles.disc, styles.discLg, { backgroundColor: colors.successSoft, borderColor: alpha(colors.success, 0.35) }]}>
+                <View
+                  style={[
+                    styles.disc,
+                    styles.discLg,
+                    {
+                      backgroundColor: colors.successSoft,
+                      borderColor: alpha(colors.success, 0.35),
+                    },
+                  ]}
+                >
                   <Ionicons name="checkmark" size={32} color={colors.success} />
                 </View>
                 <Text variant="h2" align="center">
@@ -137,7 +188,18 @@ export default function RecoverScreen() {
               </View>
             ) : (
               <>
-                <View style={[styles.info, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.lg, flexDirection: "column", gap: 10 }]}>
+                <View
+                  style={[
+                    styles.info,
+                    {
+                      backgroundColor: colors.muted,
+                      borderColor: colors.border,
+                      borderRadius: radius.lg,
+                      flexDirection: "column",
+                      gap: 10,
+                    },
+                  ]}
+                >
                   <Text variant="bodyMedium">Share this link with your guardians</Text>
                   <Text variant="mono" tone="muted" selectable numberOfLines={2}>
                     {shareLink}
@@ -145,8 +207,14 @@ export default function RecoverScreen() {
                   <View style={styles.actions}>
                     <Button
                       size="sm"
-                      icon={<Ionicons name="share-outline" size={14} color={colors.primaryForeground} />}
-                      onPress={() => Share.share({ message: `Please approve my Guardian Wallet recovery: ${shareLink}` })}
+                      icon={
+                        <Ionicons name="share-outline" size={14} color={colors.primaryForeground} />
+                      }
+                      onPress={() =>
+                        Share.share({
+                          message: `Please approve my Guardian Wallet recovery: ${shareLink}`,
+                        })
+                      }
                     >
                       Share
                     </Button>
@@ -208,7 +276,14 @@ export default function RecoverScreen() {
 const styles = StyleSheet.create({
   stack: { gap: 16 },
   titleRow: { flexDirection: "row", alignItems: "center", gap: 14 },
-  disc: { width: 48, height: 48, borderRadius: 24, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  disc: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
   discLg: { width: 72, height: 72, borderRadius: 36 },
   info: { flexDirection: "row", gap: 10, padding: 14, borderWidth: 1, alignItems: "flex-start" },
   actions: { flexDirection: "row", gap: 8 },

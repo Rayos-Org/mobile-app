@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
@@ -10,9 +10,21 @@ import { useTheme } from "@/hooks/useTheme";
 import { alpha, brandGradient } from "@/lib/theme";
 
 const highlights = [
-  { icon: "finger-print", title: "Passkey secured", text: "Face ID or fingerprint. No seed phrase, ever." },
-  { icon: "shield-checkmark", title: "On-chain policies", text: "Spend limits enforced by the contract." },
-  { icon: "people", title: "Social recovery", text: "Guardians restore access if you lose your device." },
+  {
+    icon: "finger-print",
+    title: "Passkey secured",
+    text: "Face ID or fingerprint. No seed phrase, ever.",
+  },
+  {
+    icon: "shield-checkmark",
+    title: "On-chain policies",
+    text: "Spend limits enforced by the contract.",
+  },
+  {
+    icon: "people",
+    title: "Social recovery",
+    text: "Guardians restore access if you lose your device.",
+  },
 ] as const;
 
 /** Landing — mirrors the web-dashboard hero. */
@@ -37,8 +49,8 @@ export default function WelcomeScreen() {
           <GradientText>biometrics.</GradientText>
         </View>
         <Text tone="muted" style={{ marginTop: 14, maxWidth: 340 }}>
-          A passkey-powered Stellar smart wallet. No seed phrases, no passwords — just you,
-          with on-chain spend policies and guardian recovery built in.
+          A passkey-powered Stellar smart wallet. No seed phrases, no passwords — just you, with
+          on-chain spend policies and guardian recovery built in.
         </Text>
       </Animated.View>
 
@@ -73,7 +85,11 @@ export default function WelcomeScreen() {
             key={h.title}
             style={[
               styles.tile,
-              { backgroundColor: alpha(colors.card, 0.7), borderColor: colors.border, borderRadius: radius.xl },
+              {
+                backgroundColor: alpha(colors.card, 0.7),
+                borderColor: colors.border,
+                borderRadius: radius.xl,
+              },
             ]}
           >
             <LinearGradient
@@ -111,6 +127,14 @@ export default function WelcomeScreen() {
 /** Brand-gradient headline — same gradient as `.text-gradient` on the web. */
 function GradientText({ children }: { children: string }) {
   const { typography } = useTheme();
+  // MaskedView has no web implementation; web is dev-preview only.
+  if (Platform.OS === "web") {
+    return (
+      <Text variant="display" style={{ color: brandGradient[0] }}>
+        {children}
+      </Text>
+    );
+  }
   return (
     <MaskedView
       maskElement={
@@ -141,6 +165,12 @@ const styles = StyleSheet.create({
   grid: { gap: 10, marginTop: 8 },
   tile: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14, borderWidth: 1 },
   tileIcon: { width: 38, height: 38, alignItems: "center", justifyContent: "center" },
-  footer: { flexDirection: "row", flexWrap: "wrap", gap: 14, justifyContent: "center", marginTop: 8 },
+  footer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 14,
+    justifyContent: "center",
+    marginTop: 8,
+  },
   footerItem: { flexDirection: "row", alignItems: "center", gap: 5 },
 });

@@ -65,7 +65,12 @@ export default function LoginScreen() {
           >
             Sign in with Passkey
           </Button>
-          <Button variant="ghost" fullWidth disabled={processing} onPress={() => router.replace("/create")}>
+          <Button
+            variant="ghost"
+            fullWidth
+            disabled={processing}
+            onPress={() => router.replace("/create")}
+          >
             Create a new wallet instead
           </Button>
         </View>

@@ -30,11 +30,18 @@ export default function CreateWalletScreen() {
   const [step, setStep] = useState<Step>(1);
   const [name, setName] = useState("");
   const [processing, setProcessing] = useState(false);
-  const [result, setResult] = useState<{ address: string; credentialId: string; userHandle: string } | null>(null);
+  const [result, setResult] = useState<{
+    address: string;
+    credentialId: string;
+    userHandle: string;
+  } | null>(null);
 
   const handleCreatePasskey = async () => {
     if (!isPasskeySupported()) {
-      toast.error("Passkeys unavailable", "This device can’t create passkeys. iOS 16+ / Android 9+ required.");
+      toast.error(
+        "Passkeys unavailable",
+        "This device can’t create passkeys. iOS 16+ / Android 9+ required."
+      );
       return;
     }
     setProcessing(true);
@@ -100,7 +107,9 @@ export default function CreateWalletScreen() {
               fullWidth
               disabled={!name.trim()}
               onPress={() => setStep(2)}
-              iconRight={<Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />}
+              iconRight={
+                <Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />
+              }
             >
               Continue
             </Button>
@@ -116,7 +125,9 @@ export default function CreateWalletScreen() {
             </Text>
             <PasskeyPrompt
               processing={processing}
-              message={processing ? "Waiting for your device…" : "Tap below to register your passkey"}
+              message={
+                processing ? "Waiting for your device…" : "Tap below to register your passkey"
+              }
             />
             <Button
               size="lg"
@@ -137,7 +148,12 @@ export default function CreateWalletScreen() {
         {step === 3 && result && (
           <Animated.View entering={FadeIn} style={styles.stack}>
             <View style={styles.doneHeader}>
-              <View style={[styles.checkDisc, { backgroundColor: colors.successSoft, borderColor: alpha(colors.success, 0.35) }]}>
+              <View
+                style={[
+                  styles.checkDisc,
+                  { backgroundColor: colors.successSoft, borderColor: alpha(colors.success, 0.35) },
+                ]}
+              >
                 <Ionicons name="checkmark" size={26} color={colors.success} />
               </View>
               <View style={{ flex: 1 }}>
@@ -148,7 +164,16 @@ export default function CreateWalletScreen() {
               </View>
             </View>
 
-            <View style={[styles.addressBox, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.lg }]}>
+            <View
+              style={[
+                styles.addressBox,
+                {
+                  backgroundColor: colors.muted,
+                  borderColor: colors.border,
+                  borderRadius: radius.lg,
+                },
+              ]}
+            >
               <Text variant="caption" tone="muted">
                 Your wallet address
               </Text>
@@ -178,7 +203,16 @@ export default function CreateWalletScreen() {
               </View>
             </View>
 
-            <View style={[styles.note, { backgroundColor: colors.warningSoft, borderColor: alpha(colors.warning, 0.35), borderRadius: radius.lg }]}>
+            <View
+              style={[
+                styles.note,
+                {
+                  backgroundColor: colors.warningSoft,
+                  borderColor: alpha(colors.warning, 0.35),
+                  borderRadius: radius.lg,
+                },
+              ]}
+            >
               <Ionicons name="water-outline" size={18} color={colors.warning} />
               <View style={{ flex: 1 }}>
                 <Text variant="small">
@@ -204,7 +238,9 @@ export default function CreateWalletScreen() {
               fullWidth
               testID="go-dashboard"
               onPress={finish}
-              iconRight={<Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />}
+              iconRight={
+                <Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} />
+              }
             >
               Go to Dashboard
             </Button>
@@ -218,7 +254,14 @@ export default function CreateWalletScreen() {
 const styles = StyleSheet.create({
   stack: { gap: 16 },
   doneHeader: { flexDirection: "row", alignItems: "center", gap: 14 },
-  checkDisc: { width: 52, height: 52, borderRadius: 26, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  checkDisc: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
   addressBox: { padding: 14, borderWidth: 1 },
   addressActions: { flexDirection: "row", gap: 8, marginTop: 10 },
   note: { flexDirection: "row", gap: 10, padding: 12, borderWidth: 1, alignItems: "flex-start" },
