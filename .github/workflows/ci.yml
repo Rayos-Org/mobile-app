@@ -27,15 +27,6 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with:
-          # @rayos/wallet-sdk is linked from ../wallet-sdk locally; in CI we pull it as a sibling.
-          path: mobile-app
-
-      - name: Checkout wallet-sdk (linked dependency)
-        uses: actions/checkout@v4
-        with:
-          repository: Rayos-Org/wallet-sdk
-          path: wallet-sdk
 
       - uses: pnpm/action-setup@v4
         with:
@@ -43,35 +34,22 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24
           cache: pnpm
-          cache-dependency-path: |
-            mobile-app/pnpm-lock.yaml
-            wallet-sdk/pnpm-lock.yaml
-
-      - name: Build wallet-sdk
-        working-directory: wallet-sdk
-        run: |
-          pnpm install --no-frozen-lockfile
-          pnpm run build
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install
-        working-directory: mobile-app
         run: pnpm install --frozen-lockfile
 
       - name: Typecheck
-        working-directory: mobile-app
         run: pnpm typecheck
 
       - name: Lint
-        working-directory: mobile-app
         run: pnpm lint
 
       - name: Format check
-        working-directory: mobile-app
         run: pnpm format:check
 
       - name: Unit & component tests
-        working-directory: mobile-app
         run: pnpm test:ci
 
       - name: Upload coverage
@@ -80,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: mobile-app/coverage
+          path: coverage
           # Don't fail the workflow if coverage dir wasn't produced (e.g. tests crashed early)
           if-no-files-found: warn
           retention-days: 7
@@ -92,12 +70,6 @@ jobs:
     needs: quality
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: mobile-app
-      - uses: actions/checkout@v4
-        with:
-          repository: Rayos-Org/wallet-sdk
-          path: wallet-sdk
 
       - uses: pnpm/action-setup@v4
         with:
@@ -105,31 +77,21 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24
           cache: pnpm
-          cache-dependency-path: |
-            mobile-app/pnpm-lock.yaml
-            wallet-sdk/pnpm-lock.yaml
-
-      - name: Build wallet-sdk
-        working-directory: wallet-sdk
-        run: pnpm install --no-frozen-lockfile && pnpm run build
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install
-        working-directory: mobile-app
         run: pnpm install --frozen-lockfile
 
       - name: Validate Expo config & dependencies
-        working-directory: mobile-app
         # expo-doctor exits 1 for warnings; --fix-dependencies is not needed in CI
         run: npx expo-doctor || true
 
       - name: Bundle every route (web target as a Metro smoke test)
-        working-directory: mobile-app
         env:
           APP_ENV: preview
         run: npx expo export --platform web --output-dir dist-web
 
       - name: Verify native config resolves (prebuild dry-run)
-        working-directory: mobile-app
         run: npx expo config --type prebuild --json > /dev/null

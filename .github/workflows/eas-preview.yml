@@ -38,8 +38,8 @@ jobs:
       - name: Check EAS secrets
         id: gate
         run: |
-          if [ -z "$EXPO_TOKEN" ] || [ -z "$EAS_PROJECT_ID" ]; then
-            echo "::warning::EXPO_TOKEN / EAS_PROJECT_ID not set — skipping EAS build."
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::warning::EXPO_TOKEN secret not set — skipping EAS build."
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=true" >> "$GITHUB_OUTPUT"
@@ -47,13 +47,6 @@ jobs:
 
       - uses: actions/checkout@v4
         if: steps.gate.outputs.enabled == 'true'
-        with:
-          path: mobile-app
-      - uses: actions/checkout@v4
-        if: steps.gate.outputs.enabled == 'true'
-        with:
-          repository: Rayos-Org/wallet-sdk
-          path: wallet-sdk
       - uses: pnpm/action-setup@v4
         if: steps.gate.outputs.enabled == 'true'
         with:
@@ -61,9 +54,9 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.enabled == 'true'
         with:
-          node-version: 22.14.0
+          node-version: 24
           cache: pnpm
-          cache-dependency-path: mobile-app/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - uses: expo/expo-github-action@v8
         if: steps.gate.outputs.enabled == 'true'
@@ -71,19 +64,12 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build wallet-sdk
-        if: steps.gate.outputs.enabled == 'true'
-        working-directory: wallet-sdk
-        run: pnpm install --no-frozen-lockfile && pnpm run build
-
       - name: Install
         if: steps.gate.outputs.enabled == 'true'
-        working-directory: mobile-app
         run: pnpm install --frozen-lockfile
 
       - name: Build (preview)
         if: steps.gate.outputs.enabled == 'true'
-        working-directory: mobile-app
         run: |
           PLATFORM="${{ github.event.inputs.platform || 'all' }}"
           eas build --profile preview --platform "$PLATFORM" --non-interactive --no-wait \

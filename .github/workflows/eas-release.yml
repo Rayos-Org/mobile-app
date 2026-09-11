@@ -31,13 +31,6 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: mobile-app
-
-      - uses: actions/checkout@v4
-        with:
-          repository: Rayos-Org/wallet-sdk
-          path: wallet-sdk
 
       - uses: pnpm/action-setup@v4
         with:
@@ -45,14 +38,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24
           # Disable pnpm cache here: GitHub cache service can return 400/503
           # during high-traffic periods. EAS builds on Expo's servers anyway,
           # so local cache only helps the quality-gate step below.
           cache: pnpm
-          cache-dependency-path: |
-            mobile-app/pnpm-lock.yaml
-            wallet-sdk/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - uses: expo/expo-github-action@v8
         with:
@@ -61,16 +52,10 @@ jobs:
           # Disable expo-github-action's own cache to avoid 400 errors
           packager: pnpm
 
-      - name: Build wallet-sdk
-        working-directory: wallet-sdk
-        run: pnpm install --no-frozen-lockfile && pnpm run build
-
       - name: Install
-        working-directory: mobile-app
         run: pnpm install --frozen-lockfile
 
       - name: Quality gate
-        working-directory: mobile-app
         env:
           EXPO_PUBLIC_RELAY_BACKEND_URL: https://rayos-relay-backend.onrender.com/api
           EXPO_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
@@ -82,7 +67,6 @@ jobs:
         run: pnpm typecheck && pnpm lint && pnpm test:ci
 
       - name: Build (production, both platforms)
-        working-directory: mobile-app
         run: eas build --profile production --platform all --non-interactive --wait
 
   submit:
