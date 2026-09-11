@@ -50,7 +50,8 @@ export function GuardianList() {
       setAddress("");
       setWeight("1");
     } catch (err) {
-      if (!(err instanceof PasskeyCancelledError)) toast.error("Proposal failed", errorMessage(err));
+      if (!(err instanceof PasskeyCancelledError))
+        toast.error("Proposal failed", errorMessage(err));
     }
   };
 
@@ -66,7 +67,8 @@ export function GuardianList() {
             await sign.mutateAsync({ credentialId, userHandle: userHandle ?? walletAddress! });
             toast.success("Removal proposed");
           } catch (err) {
-            if (!(err instanceof PasskeyCancelledError)) toast.error("Removal failed", errorMessage(err));
+            if (!(err instanceof PasskeyCancelledError))
+              toast.error("Removal failed", errorMessage(err));
           }
         },
       },
@@ -82,7 +84,11 @@ export function GuardianList() {
           icon={<Ionicons name="people" size={18} color={colors.primary} />}
           style={{ paddingHorizontal: 18, paddingTop: 18, marginBottom: 12 }}
           action={
-            <Button size="sm" onPress={() => setOpen(true)} icon={<Ionicons name="add" size={16} color={colors.primaryForeground} />}>
+            <Button
+              size="sm"
+              onPress={() => setOpen(true)}
+              icon={<Ionicons name="add" size={16} color={colors.primaryForeground} />}
+            >
               Add
             </Button>
           }
@@ -90,7 +96,14 @@ export function GuardianList() {
 
         <View style={{ paddingHorizontal: 18, marginBottom: 12 }}>
           <View
-            style={[styles.threshold, { backgroundColor: alpha(colors.primary, 0.07), borderColor: alpha(colors.primary, 0.3), borderRadius: radius.xl }]}
+            style={[
+              styles.threshold,
+              {
+                backgroundColor: alpha(colors.primary, 0.07),
+                borderColor: alpha(colors.primary, 0.3),
+                borderRadius: radius.xl,
+              },
+            ]}
           >
             <View style={{ flex: 1 }}>
               <Text variant="bodyMedium">Recovery threshold</Text>
@@ -162,7 +175,13 @@ export function GuardianList() {
         description="Propose a new guardian signer on-chain. Existing guardians must approve."
         footer={
           !sign.isPending ? (
-            <Button size="lg" fullWidth disabled={!valid} onPress={propose} icon={<Ionicons name="finger-print" size={18} color={colors.primaryForeground} />}>
+            <Button
+              size="lg"
+              fullWidth
+              disabled={!valid}
+              onPress={propose}
+              icon={<Ionicons name="finger-print" size={18} color={colors.primaryForeground} />}
+            >
               Propose guardian
             </Button>
           ) : null
@@ -180,7 +199,11 @@ export function GuardianList() {
               autoCapitalize="characters"
               autoCorrect={false}
               mono
-              error={address.length > 0 && !isStellarAddress(address) ? "Enter a valid 56-character address" : undefined}
+              error={
+                address.length > 0 && !isStellarAddress(address)
+                  ? "Enter a valid 56-character address"
+                  : undefined
+              }
             />
             <Input
               label="Signer weight"
@@ -197,5 +220,12 @@ export function GuardianList() {
 }
 
 const styles = StyleSheet.create({
-  threshold: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderWidth: 1, borderStyle: "dashed" },
+  threshold: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
 });

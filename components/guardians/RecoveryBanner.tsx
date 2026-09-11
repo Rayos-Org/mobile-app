@@ -54,7 +54,14 @@ export function RecoveryBanner() {
 
   return (
     <View
-      style={[styles.banner, { backgroundColor: alpha(colors.destructive, 0.08), borderColor: alpha(colors.destructive, 0.4), borderRadius: radius["2xl"] }]}
+      style={[
+        styles.banner,
+        {
+          backgroundColor: alpha(colors.destructive, 0.08),
+          borderColor: alpha(colors.destructive, 0.4),
+          borderRadius: radius["2xl"],
+        },
+      ]}
     >
       <View style={styles.row}>
         <View style={[styles.disc, { backgroundColor: alpha(colors.destructive, 0.15) }]}>
@@ -70,7 +77,13 @@ export function RecoveryBanner() {
         </View>
         <Badge variant="destructive">{`${n} approval${n === 1 ? "" : "s"}`}</Badge>
       </View>
-      <Button variant="destructive" fullWidth loading={sign.isPending} onPress={cancel} style={{ marginTop: 12 }}>
+      <Button
+        variant="destructive"
+        fullWidth
+        loading={sign.isPending}
+        onPress={cancel}
+        style={{ marginTop: 12 }}
+      >
         Cancel recovery
       </Button>
     </View>
