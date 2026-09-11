@@ -35,7 +35,13 @@ export interface CreateSessionParams {
 export function useCreateSessionKey() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ walletAddress, credentialId, userHandle, scope, expiresAt }: CreateSessionParams) => {
+    mutationFn: async ({
+      walletAddress,
+      credentialId,
+      userHandle,
+      scope,
+      expiresAt,
+    }: CreateSessionParams) => {
       const { assertion } = await assertWithPasskey(userHandle, credentialId, "session");
       return api<SessionKey>("/sessions", {
         method: "POST",
@@ -51,9 +57,12 @@ export function useRevokeSessionKey() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, walletAddress }: { id: string; walletAddress: string }) =>
-      api(`/sessions/${encodeURIComponent(id)}?walletAddress=${encodeURIComponent(walletAddress)}`, {
-        method: "DELETE",
-      }),
+      api(
+        `/sessions/${encodeURIComponent(id)}?walletAddress=${encodeURIComponent(walletAddress)}`,
+        {
+          method: "DELETE",
+        }
+      ),
     onSuccess: (_, { walletAddress }) =>
       qc.invalidateQueries({ queryKey: policyKeys.sessions(walletAddress) }),
   });
@@ -67,7 +76,13 @@ export function useRevokeSessionKey() {
  */
 export function useSignPolicyChange() {
   return useMutation({
-    mutationFn: async ({ credentialId, userHandle }: { credentialId: string; userHandle: string }) => {
+    mutationFn: async ({
+      credentialId,
+      userHandle,
+    }: {
+      credentialId: string;
+      userHandle: string;
+    }) => {
       const { assertion } = await assertWithPasskey(userHandle, credentialId, "policy");
       return assertion;
     },

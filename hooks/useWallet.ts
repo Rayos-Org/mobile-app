@@ -76,7 +76,8 @@ export function useTransactions(walletAddress?: string | null) {
 export function useTransactionStatus(txHash?: string) {
   return useQuery({
     queryKey: walletKeys.txStatus(txHash),
-    queryFn: () => api<{ hash: string; status: "pending" | "success" | "failed" }>(`/relay/status/${txHash}`),
+    queryFn: () =>
+      api<{ hash: string; status: "pending" | "success" | "failed" }>(`/relay/status/${txHash}`),
     enabled: !!txHash,
     refetchInterval: (q) => (q.state.data?.status === "pending" || !q.state.data ? 3_000 : false),
   });

@@ -21,7 +21,8 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 /** Push the override to native so system dialogs / keyboard match. */
 function applyNativeScheme(pref: ThemePreference) {
-  // RN types the "follow system" value as null at runtime; cast keeps TS happy across versions.
+  // Not implemented on react-native-web; RN types the "follow system" value as null.
+  if (typeof Appearance.setColorScheme !== "function") return;
   Appearance.setColorScheme((pref === "system" ? null : pref) as any);
 }
 
@@ -41,7 +42,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    prefs.getItem(STORAGE_KEY)
+    prefs
+      .getItem(STORAGE_KEY)
       .then((stored) => {
         if (cancelled) return;
         if (isPreference(stored)) {

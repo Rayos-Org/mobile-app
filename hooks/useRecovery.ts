@@ -18,7 +18,9 @@ export function useRecoveryProposal(proposalId?: string | null) {
     queryKey: recoveryKeys.proposal(proposalId),
     queryFn: async (): Promise<RecoveryProposalStatus | null> => {
       try {
-        return await api<RecoveryProposalStatus>(`/recovery/${encodeURIComponent(proposalId!)}/status`);
+        return await api<RecoveryProposalStatus>(
+          `/recovery/${encodeURIComponent(proposalId!)}/status`
+        );
       } catch (e: any) {
         if (e?.status === 404) return null;
         throw e;
