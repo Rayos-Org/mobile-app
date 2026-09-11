@@ -78,7 +78,16 @@ function Bloom({
   const rings = Array.from({ length: STEPS }, (_, i) => 1 - i / STEPS);
   return (
     <Animated.View
-      style={[{ position: "absolute", width: size, height: size, alignItems: "center", justifyContent: "center" }, style]}
+      style={[
+        {
+          position: "absolute",
+          width: size,
+          height: size,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        style,
+      ]}
     >
       {rings.map((r, i) => (
         <View
@@ -88,7 +97,7 @@ function Bloom({
             width: size * r,
             height: size * r,
             borderRadius: (size * r) / 2,
-            backgroundColor: alpha(color, (opacity * 1.6) / STEPS * (1 + (i / STEPS) ** 2)),
+            backgroundColor: alpha(color, ((opacity * 1.6) / STEPS) * (1 + (i / STEPS) ** 2)),
           }}
         />
       ))}

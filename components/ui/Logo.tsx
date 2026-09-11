@@ -25,7 +25,11 @@ export function Logo({
           <View
             style={[
               StyleSheet.absoluteFill,
-              { borderRadius: size / 3, backgroundColor: alpha(colors.primary, 0.35), transform: [{ scale: 1.15 }] },
+              {
+                borderRadius: size / 3,
+                backgroundColor: alpha(colors.primary, 0.35),
+                transform: [{ scale: 1.15 }],
+              },
             ]}
           />
         ) : null}

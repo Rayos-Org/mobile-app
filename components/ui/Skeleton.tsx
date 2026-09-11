@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 import { type DimensionValue, type ViewStyle } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 import { useTheme } from "@/hooks/useTheme";
 
 export function Skeleton({
@@ -22,7 +27,11 @@ export function Skeleton({
   const anim = useAnimatedStyle(() => ({ opacity: o.value }));
   return (
     <Animated.View
-      style={[{ width, height, borderRadius: radius ?? r.md, backgroundColor: colors.muted }, anim, style]}
+      style={[
+        { width, height, borderRadius: radius ?? r.md, backgroundColor: colors.muted },
+        anim,
+        style,
+      ]}
     />
   );
 }

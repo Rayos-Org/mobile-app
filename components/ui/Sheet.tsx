@@ -63,16 +63,28 @@ export function Sheet({
   };
 
   return (
-    <Modal visible={open} transparent animationType="none" onRequestClose={tryClose} statusBarTranslucent>
+    <Modal
+      visible={open}
+      transparent
+      animationType="none"
+      onRequestClose={tryClose}
+      statusBarTranslucent
+    >
       <View style={styles.root}>
         <Animated.View style={[StyleSheet.absoluteFill, backdrop]}>
           <Pressable
-            style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "rgba(0,0,0,0.65)" : "rgba(11,18,32,0.45)" }]}
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: isDark ? "rgba(0,0,0,0.65)" : "rgba(11,18,32,0.45)" },
+            ]}
             onPress={tryClose}
           />
         </Animated.View>
 
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.kav}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.kav}
+        >
           <Animated.View
             style={[
               styles.panel,
@@ -131,7 +143,13 @@ const styles = StyleSheet.create({
   panel: { paddingHorizontal: 20, paddingTop: 10, borderWidth: StyleSheet.hairlineWidth },
   grabber: { width: 40, height: 4, borderRadius: 2, alignSelf: "center", marginBottom: 14 },
   header: { flexDirection: "row", alignItems: "flex-start", gap: 12, marginBottom: 16 },
-  close: { width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" },
+  close: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   body: { gap: 16, paddingBottom: 8 },
   footer: { marginTop: 12, gap: 10 },
 });

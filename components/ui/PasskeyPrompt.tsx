@@ -1,6 +1,12 @@
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks/useTheme";
 import { alpha } from "@/lib/theme";
@@ -33,15 +39,36 @@ export function PasskeyPrompt({
   }));
 
   return (
-    <View style={[styles.wrap, { borderColor: colors.border, borderRadius: radius["2xl"], backgroundColor: alpha(colors.muted, 0.6) }]}>
+    <View
+      style={[
+        styles.wrap,
+        {
+          borderColor: colors.border,
+          borderRadius: radius["2xl"],
+          backgroundColor: alpha(colors.muted, 0.6),
+        },
+      ]}
+    >
       <View style={styles.stage}>
         {processing ? (
           <>
-            <Animated.View style={[styles.ring, { borderColor: alpha(colors.primary, 0.6) }, ring1]} />
-            <Animated.View style={[styles.ring, { borderColor: alpha(colors.primary, 0.6) }, ring2]} />
+            <Animated.View
+              style={[styles.ring, { borderColor: alpha(colors.primary, 0.6) }, ring1]}
+            />
+            <Animated.View
+              style={[styles.ring, { borderColor: alpha(colors.primary, 0.6) }, ring2]}
+            />
           </>
         ) : null}
-        <View style={[styles.disc, { backgroundColor: alpha(colors.primary, 0.12), borderColor: alpha(colors.primary, 0.3) }]}>
+        <View
+          style={[
+            styles.disc,
+            {
+              backgroundColor: alpha(colors.primary, 0.12),
+              borderColor: alpha(colors.primary, 0.3),
+            },
+          ]}
+        >
           <Ionicons name="finger-print" size={40} color={colors.primary} />
         </View>
       </View>
@@ -56,5 +83,12 @@ const styles = StyleSheet.create({
   wrap: { alignItems: "center", padding: 28, gap: 18, borderWidth: 1.5 },
   stage: { width: 110, height: 110, alignItems: "center", justifyContent: "center" },
   ring: { position: "absolute", width: 100, height: 100, borderRadius: 50, borderWidth: 1.5 },
-  disc: { width: 84, height: 84, borderRadius: 42, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  disc: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
 });

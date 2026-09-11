@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -43,7 +51,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     (kind: ToastKind, title: string, description?: string) => {
       const id = nextId++;
       setItems((prev) => [...prev.slice(-2), { id, kind, title, description }]);
-      timers.current.set(id, setTimeout(() => dismiss(id), kind === "error" ? 5000 : 3200));
+      timers.current.set(
+        id,
+        setTimeout(() => dismiss(id), kind === "error" ? 5000 : 3200)
+      );
       const fb =
         kind === "success"
           ? Haptics.NotificationFeedbackType.Success
@@ -82,8 +93,17 @@ function ToastHost({ items, onDismiss }: { items: ToastItem[]; onDismiss: (id: n
     <View pointerEvents="box-none" style={[styles.host, { top: insets.top + 8 }]}>
       {items.map((t) => {
         const tone =
-          t.kind === "success" ? colors.success : t.kind === "error" ? colors.destructive : colors.primary;
-        const icon = t.kind === "success" ? "checkmark-circle" : t.kind === "error" ? "close-circle" : "information-circle";
+          t.kind === "success"
+            ? colors.success
+            : t.kind === "error"
+              ? colors.destructive
+              : colors.primary;
+        const icon =
+          t.kind === "success"
+            ? "checkmark-circle"
+            : t.kind === "error"
+              ? "close-circle"
+              : "information-circle";
         return (
           <Animated.View
             key={t.id}

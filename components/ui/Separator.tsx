@@ -7,7 +7,12 @@ export function Separator({ vertical = false, inset = 0 }: { vertical?: boolean;
     <View
       style={
         vertical
-          ? { width: 1, alignSelf: "stretch", backgroundColor: colors.border, marginVertical: inset }
+          ? {
+              width: 1,
+              alignSelf: "stretch",
+              backgroundColor: colors.border,
+              marginVertical: inset,
+            }
           : { height: 1, backgroundColor: colors.border, marginHorizontal: inset }
       }
     />

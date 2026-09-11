@@ -4,7 +4,8 @@ import { useTheme } from "@/hooks/useTheme";
 import { alpha } from "@/lib/theme";
 import { Text } from "./Text";
 
-export type BadgeVariant = "default" | "secondary" | "outline" | "success" | "warning" | "destructive" | "primary";
+export type BadgeVariant =
+  "default" | "secondary" | "outline" | "success" | "warning" | "destructive" | "primary";
 
 export interface BadgeProps extends ViewProps {
   children: ReactNode;
@@ -18,12 +19,20 @@ export function Badge({ children, variant = "default", dot = false, style, ...pr
 
   const palette = {
     default: { bg: colors.primary, fg: colors.primaryForeground, border: "transparent" },
-    primary: { bg: alpha(colors.primary, 0.12), fg: colors.primary, border: alpha(colors.primary, 0.35) },
+    primary: {
+      bg: alpha(colors.primary, 0.12),
+      fg: colors.primary,
+      border: alpha(colors.primary, 0.35),
+    },
     secondary: { bg: colors.secondary, fg: colors.secondaryForeground, border: "transparent" },
     outline: { bg: "transparent", fg: colors.foreground, border: colors.border },
     success: { bg: colors.successSoft, fg: colors.success, border: alpha(colors.success, 0.35) },
     warning: { bg: colors.warningSoft, fg: colors.warning, border: alpha(colors.warning, 0.35) },
-    destructive: { bg: colors.destructiveSoft, fg: colors.destructive, border: alpha(colors.destructive, 0.35) },
+    destructive: {
+      bg: colors.destructiveSoft,
+      fg: colors.destructive,
+      border: alpha(colors.destructive, 0.35),
+    },
   }[variant];
 
   return (

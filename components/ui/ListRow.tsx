@@ -16,7 +16,16 @@ export interface ListRowProps {
 }
 
 /** Edge-to-edge row for lists inside a flush Card (activity, signers, sessions). */
-export function ListRow({ icon, iconTone = "primary", title, subtitle, mono, right, onPress, last }: ListRowProps) {
+export function ListRow({
+  icon,
+  iconTone = "primary",
+  title,
+  subtitle,
+  mono,
+  right,
+  onPress,
+  last,
+}: ListRowProps) {
   const { colors } = useTheme();
   const toneColor = {
     primary: colors.primary,
@@ -32,17 +41,29 @@ export function ListRow({ icon, iconTone = "primary", title, subtitle, mono, rig
       disabled={!onPress}
       style={({ pressed }) => [
         styles.row,
-        { borderBottomColor: colors.border, borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth },
+        {
+          borderBottomColor: colors.border,
+          borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth,
+        },
         pressed ? { backgroundColor: alpha(colors.foreground, 0.04) } : null,
       ]}
     >
       {icon ? (
-        <View style={[styles.icon, { backgroundColor: alpha(toneColor, 0.12), borderColor: alpha(toneColor, 0.25) }]}>
+        <View
+          style={[
+            styles.icon,
+            { backgroundColor: alpha(toneColor, 0.12), borderColor: alpha(toneColor, 0.25) },
+          ]}
+        >
           {icon}
         </View>
       ) : null}
       <View style={styles.text}>
-        <Text variant="bodyMedium" numberOfLines={1} style={mono ? { fontFamily: "monospace", fontSize: 13 } : null}>
+        <Text
+          variant="bodyMedium"
+          numberOfLines={1}
+          style={mono ? { fontFamily: "monospace", fontSize: 13 } : null}
+        >
           {title}
         </Text>
         {subtitle ? (
@@ -57,7 +78,20 @@ export function ListRow({ icon, iconTone = "primary", title, subtitle, mono, rig
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 18, paddingVertical: 14 },
-  icon: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
   text: { flex: 1, minWidth: 0 },
 });

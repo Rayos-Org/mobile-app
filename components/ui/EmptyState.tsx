@@ -21,12 +21,14 @@ export function EmptyState({
     <View
       style={[
         styles.wrap,
-        { borderColor: colors.border, borderRadius: radius.xl, borderStyle: dashed ? "dashed" : "solid" },
+        {
+          borderColor: colors.border,
+          borderRadius: radius.xl,
+          borderStyle: dashed ? "dashed" : "solid",
+        },
       ]}
     >
-      {icon ? (
-        <View style={[styles.icon, { backgroundColor: colors.muted }]}>{icon}</View>
-      ) : null}
+      {icon ? <View style={[styles.icon, { backgroundColor: colors.muted }]}>{icon}</View> : null}
       <Text variant="bodyMedium" align="center">
         {title}
       </Text>
@@ -42,5 +44,12 @@ export function EmptyState({
 
 const styles = StyleSheet.create({
   wrap: { alignItems: "center", paddingVertical: 36, paddingHorizontal: 20, borderWidth: 1.5 },
-  icon: { width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center", marginBottom: 14 },
+  icon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+  },
 });
