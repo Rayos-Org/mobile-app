@@ -1,0 +1,98 @@
+name: EAS Release
+
+# Tagged release (v1.2.3) → production build → manual approval → store submission.
+# The "production-stores" environment must be created in repo settings with
+# required reviewers; that is the manual gate described in ARCHITECTURE.md §7.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      submit:
+        description: Submit to the stores after building
+        type: boolean
+        default: false
+
+concurrency:
+  group: eas-release
+  cancel-in-progress: false
+
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+  EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+
+jobs:
+  build:
+    name: eas build --profile production
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: mobile-app
+      - uses: actions/checkout@v4
+        with:
+          repository: Rayos-Org/wallet-sdk
+          path: wallet-sdk
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.17.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile-app/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build wallet-sdk
+        working-directory: wallet-sdk
+        run: pnpm install --frozen-lockfile && pnpm run build
+      - name: Install
+        working-directory: mobile-app
+        run: pnpm install --frozen-lockfile
+
+      - name: Quality gate
+        working-directory: mobile-app
+        run: pnpm typecheck && pnpm lint && pnpm test:ci
+
+      - name: Build (production, both platforms)
+        working-directory: mobile-app
+        run: eas build --profile production --platform all --non-interactive --wait
+
+  submit:
+    name: eas submit (manual approval)
+    needs: build
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event.inputs.submit == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production-stores
+    steps:
+      - uses: actions/checkout@v4
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Write Google Play service account
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > google-service-account.json
+
+      - name: Submit iOS (TestFlight)
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          ASC_APP_ID: ${{ secrets.ASC_APP_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}
+        run: eas submit --platform ios --profile production --latest --non-interactive
+
+      - name: Submit Android (internal track)
+        run: eas submit --platform android --profile production --latest --non-interactive
+
+      - name: Clean up credentials
+        if: always()
+        run: rm -f google-service-account.json

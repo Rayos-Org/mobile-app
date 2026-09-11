@@ -1,0 +1,93 @@
+name: EAS Update (OTA)
+
+# JS-only over-the-air updates. Pushes to main publish to the `preview`
+# channel; the `production` channel is published manually via workflow_dispatch
+# after a release has been approved.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".github/**"
+      - "e2e/**"
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Update channel
+        type: choice
+        default: preview
+        options: [preview, production]
+      message:
+        description: Update message
+        required: false
+
+concurrency:
+  group: eas-update-${{ github.event.inputs.channel || 'preview' }}
+  cancel-in-progress: true
+
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+  EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+
+jobs:
+  update:
+    name: eas update
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ github.event.inputs.channel == 'production' && 'production' || 'preview' }}
+    steps:
+      - name: Check EAS secrets
+        id: gate
+        run: |
+          if [ -z "$EXPO_TOKEN" ] || [ -z "$EAS_PROJECT_ID" ]; then
+            echo "::warning::EXPO_TOKEN / EAS_PROJECT_ID not set — skipping OTA update."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          path: mobile-app
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          repository: Rayos-Org/wallet-sdk
+          path: wallet-sdk
+      - uses: pnpm/action-setup@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          version: 11.17.0
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile-app/pnpm-lock.yaml
+      - uses: expo/expo-github-action@v8
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build wallet-sdk
+        if: steps.gate.outputs.enabled == 'true'
+        working-directory: wallet-sdk
+        run: pnpm install --frozen-lockfile && pnpm run build
+      - name: Install
+        if: steps.gate.outputs.enabled == 'true'
+        working-directory: mobile-app
+        run: pnpm install --frozen-lockfile
+
+      - name: Publish update
+        if: steps.gate.outputs.enabled == 'true'
+        working-directory: mobile-app
+        env:
+          CHANNEL: ${{ github.event.inputs.channel || 'preview' }}
+          APP_ENV: ${{ github.event.inputs.channel || 'preview' }}
+        run: |
+          eas update --channel "$CHANNEL" --non-interactive \
+            --message "${{ github.event.inputs.message || github.event.head_commit.message || 'OTA update' }}"

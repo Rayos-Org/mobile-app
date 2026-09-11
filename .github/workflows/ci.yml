@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Public config used by typecheck/tests/export — no secrets.
+  EXPO_PUBLIC_RELAY_BACKEND_URL: https://rayos-relay-backend.onrender.com/api
+  EXPO_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
+  EXPO_PUBLIC_STELLAR_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+  EXPO_PUBLIC_FACTORY_CONTRACT_ID: CCCAMWJOF7IYTVCU7SR6HFTNH5XRMDMWPYN464NY5BCKUPMUM64RZ5CH
+  EXPO_PUBLIC_POLICY_CONTRACT_ID: CCDM3O2SXX3E24MCWLRK5YBVQHJCA4OQKJFF6KWCK6FHZS65DGMT6DOY
+  EXPO_PUBLIC_WEBAUTHN_RP_ID: rayos-relay-backend.onrender.com
+  EXPO_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
+
+jobs:
+  quality:
+    name: Typecheck · Lint · Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # @rayos/wallet-sdk is linked from ../wallet-sdk locally; in CI we pull it as a sibling.
+          path: mobile-app
+
+      - name: Checkout wallet-sdk (linked dependency)
+        uses: actions/checkout@v4
+        with:
+          repository: Rayos-Org/wallet-sdk
+          path: wallet-sdk
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.17.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile-app/pnpm-lock.yaml
+
+      - name: Build wallet-sdk
+        working-directory: wallet-sdk
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: Install
+        working-directory: mobile-app
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        working-directory: mobile-app
+        run: pnpm typecheck
+
+      - name: Lint
+        working-directory: mobile-app
+        run: pnpm lint
+
+      - name: Format check
+        working-directory: mobile-app
+        run: pnpm format:check
+
+      - name: Unit & component tests
+        working-directory: mobile-app
+        run: pnpm test:ci
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: mobile-app/coverage
+          retention-days: 7
+
+  expo-health:
+    name: Expo doctor · Web export
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: mobile-app
+      - uses: actions/checkout@v4
+        with:
+          repository: Rayos-Org/wallet-sdk
+          path: wallet-sdk
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.17.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile-app/pnpm-lock.yaml
+      - name: Build wallet-sdk
+        working-directory: wallet-sdk
+        run: pnpm install --frozen-lockfile && pnpm run build
+      - name: Install
+        working-directory: mobile-app
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Expo config & dependencies
+        working-directory: mobile-app
+        run: npx expo-doctor
+
+      - name: Bundle every route (web target as a Metro smoke test)
+        working-directory: mobile-app
+        run: npx expo export --platform web --output-dir dist-web
+
+      - name: Verify native config resolves (prebuild dry-run)
+        working-directory: mobile-app
+        run: npx expo config --type prebuild --json > /dev/null

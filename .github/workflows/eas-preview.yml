@@ -1,0 +1,102 @@
+name: EAS Preview Build
+
+# Installable preview builds for every PR (QR code in the PR comment) and for
+# pushes to main. Requires the EXPO_TOKEN + EAS_PROJECT_ID secrets — the job
+# skips cleanly on forks / until they are configured.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build
+        type: choice
+        default: all
+        options: [all, android, ios]
+
+concurrency:
+  group: eas-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: eas build --profile preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request' }}
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+      EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+    steps:
+      - name: Check EAS secrets
+        id: gate
+        run: |
+          if [ -z "$EXPO_TOKEN" ] || [ -z "$EAS_PROJECT_ID" ]; then
+            echo "::warning::EXPO_TOKEN / EAS_PROJECT_ID not set — skipping EAS build."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          path: mobile-app
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          repository: Rayos-Org/wallet-sdk
+          path: wallet-sdk
+      - uses: pnpm/action-setup@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          version: 11.17.0
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile-app/pnpm-lock.yaml
+
+      - uses: expo/expo-github-action@v8
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build wallet-sdk
+        if: steps.gate.outputs.enabled == 'true'
+        working-directory: wallet-sdk
+        run: pnpm install --frozen-lockfile && pnpm run build
+
+      - name: Install
+        if: steps.gate.outputs.enabled == 'true'
+        working-directory: mobile-app
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (preview)
+        if: steps.gate.outputs.enabled == 'true'
+        working-directory: mobile-app
+        run: |
+          PLATFORM="${{ github.event.inputs.platform || 'all' }}"
+          eas build --profile preview --platform "$PLATFORM" --non-interactive --no-wait \
+            --message "${{ github.event_name }} ${{ github.ref_name }} @ ${{ github.sha }}"
+
+      - name: Comment on PR
+        if: steps.gate.outputs.enabled == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '📱 **EAS preview build queued** for `' + context.sha.slice(0, 7) + '`.',
+              '',
+              'Open the [EAS dashboard](https://expo.dev/accounts/' + (process.env.EXPO_OWNER || '_') + '/projects/rayos-wallet/builds) for the install QR code once it finishes.',
+            ].join('\n');
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
