@@ -28,7 +28,7 @@ export function AuroraBackground({ intensity = 1 }: { intensity?: number }) {
   }, [t]);
 
   const size = Math.max(width, height) * 0.9;
-  const a = (isDark ? 0.34 : 0.2) * intensity;
+  const a = (isDark ? 0.26 : 0.18) * intensity;
 
   const bloom1 = useAnimatedStyle(() => ({
     transform: [
@@ -72,8 +72,10 @@ function Bloom({
   opacity: number;
   style: any;
 }) {
-  // Concentric translucent discs approximate a radial blur without Skia.
-  const rings = [1, 0.78, 0.56, 0.36];
+  // Many concentric translucent discs with a quadratic falloff approximate a
+  // radial blur without pulling in Skia. Each step is faint enough to be seamless.
+  const STEPS = 14;
+  const rings = Array.from({ length: STEPS }, (_, i) => 1 - i / STEPS);
   return (
     <Animated.View
       style={[{ position: "absolute", width: size, height: size, alignItems: "center", justifyContent: "center" }, style]}
@@ -86,7 +88,7 @@ function Bloom({
             width: size * r,
             height: size * r,
             borderRadius: (size * r) / 2,
-            backgroundColor: alpha(color, opacity * (0.22 + i * 0.16)),
+            backgroundColor: alpha(color, (opacity * 1.6) / STEPS * (1 + (i / STEPS) ** 2)),
           }}
         />
       ))}

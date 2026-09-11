@@ -37,7 +37,7 @@ export function GuardianList() {
   const [weight, setWeight] = useState("1");
 
   const signers = data?.signers ?? [];
-  const threshold = Math.max(1, Math.ceil(signers.length / 2));
+  const threshold = signers.length === 0 ? 0 : Math.max(1, Math.ceil(signers.length / 2));
   const valid = isStellarAddress(address) && Number(weight) >= 1 && Number(weight) <= 10;
 
   const propose = async () => {

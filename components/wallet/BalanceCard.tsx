@@ -30,7 +30,7 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
   return (
     <View style={[styles.card, { borderRadius: radius["3xl"], borderColor: alpha("#FFFFFF", isDark ? 0.1 : 0.4) }]}>
       <LinearGradient
-        colors={isDark ? ["#1B1E5C", "#2A1B66", "#0E2C4A"] : ["#4F46E5", "#6D4AED", "#0891B2"]}
+        colors={isDark ? ["#3730A3", "#5B21B6", "#0E7490"] : ["#4F46E5", "#6D4AED", "#0891B2"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}

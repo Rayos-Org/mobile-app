@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   content: { paddingHorizontal: 20, paddingTop: 12, gap: 20 },
   centered: { width: "100%", maxWidth: 480, alignSelf: "center" },
-  scrollCentered: { flexGrow: 1, justifyContent: "center" },
+  scrollCentered: { flexGrow: 1 },
   header: {
     flexDirection: "row",
     alignItems: "flex-end",
