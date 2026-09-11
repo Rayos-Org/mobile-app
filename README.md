@@ -150,30 +150,30 @@ flowchart TD
     D -- New User --> E[Enter Display Name]
     D -- Returning --> F[Login with Passkey]
 
-    E --> G[Face ID / Touch ID Prompt\ncreate passkey]
-    G --> H[Relay: /webauthn/register/options\n+ /webauthn/register/verify]
-    H --> I[Deploy Wallet Contract\non Stellar Testnet]
+    E --> G["Face ID / Touch ID Prompt<br/>create passkey"]
+    G --> H["Relay: /webauthn/register/options<br/>+ /webauthn/register/verify"]
+    H --> I["Deploy Wallet Contract<br/>on Stellar Testnet"]
     I --> DASH
 
-    F --> J[Face ID / Touch ID Prompt\nassert passkey]
-    J --> K[Relay: GET /wallets/:credentialId\nlookup wallet address]
+    F --> J["Face ID / Touch ID Prompt<br/>assert passkey"]
+    J --> K["Relay: GET /wallets/:credentialId<br/>lookup wallet address"]
     K --> DASH
 
-    DASH([Dashboard]) --> TAB1[💰 Wallet Tab]
-    DASH --> TAB2[🛡️ Policies Tab]
-    DASH --> TAB3[👥 Guardians Tab]
+    DASH([Dashboard]) --> TAB1["💰 Wallet Tab"]
+    DASH --> TAB2["🛡️ Policies Tab"]
+    DASH --> TAB3["👥 Guardians Tab"]
 
-    TAB1 --> L[View XLM Balance\n+ Transaction History]
-    TAB1 --> M[Send XLM\nBiometric sign → relay submit]
+    TAB1 --> L["View XLM Balance<br/>+ Transaction History"]
+    TAB1 --> M["Send XLM<br/>Biometric sign → relay submit"]
 
     TAB2 --> N[View Session Keys]
-    TAB2 --> O[Revoke Session Key\nDELETE /api/sessions/:id]
+    TAB2 --> O["Revoke Session Key<br/>DELETE /api/sessions/:id"]
 
     TAB3 --> P{Active Recovery?}
-    P -- Yes --> Q[View Status\n+ Approve Recovery\nPOST /api/recovery/approve]
-    P -- No --> R[Initiate Recovery\nPOST /api/recovery/propose]
+    P -- Yes --> Q["View Status<br/>+ Approve Recovery<br/>POST /api/recovery/approve"]
+    P -- No --> R["Initiate Recovery<br/>POST /api/recovery/propose"]
 
-    Z([Deep Link\nrayos://recovery/:id]) --> Q
+    Z(["Deep Link<br/>rayos://recovery/:id"]) --> Q
 ```
 
 ---
@@ -183,11 +183,11 @@ flowchart TD
 ```mermaid
 graph TB
     subgraph "Mobile App (this repo)"
-        APP[expo-router screens]
-        HOOKS[hooks/\nuseWallet · usePolicies · useRecovery]
-        ADAPTER[native/passkey-adapter.ts\nPasskeyProvider impl]
-        SDK_CLIENT[lib/sdk-client.ts\nWalletSdk singleton]
-        STORE[store/auth.ts\nZustand + SecureStore]
+        APP["expo-router screens"]
+        HOOKS["hooks/<br/>useWallet · usePolicies · useRecovery"]
+        ADAPTER["native/passkey-adapter.ts<br/>PasskeyProvider impl"]
+        SDK_CLIENT["lib/sdk-client.ts<br/>WalletSdk singleton"]
+        STORE["store/auth.ts<br/>Zustand + SecureStore"]
         APP --> HOOKS
         HOOKS --> SDK_CLIENT
         SDK_CLIENT --> ADAPTER
@@ -196,33 +196,33 @@ graph TB
 
     subgraph "wallet-sdk (file dep)"
         WSDK[WalletSdk]
-        WCLIENT[WalletClient\nSoroban contract calls]
-        PCLIENT[PolicyClient\nSessions · Recovery]
-        RCLIENT[RelayClient\nHTTP relay calls]
+        WCLIENT["WalletClient<br/>Soroban contract calls"]
+        PCLIENT["PolicyClient<br/>Sessions · Recovery"]
+        RCLIENT["RelayClient<br/>HTTP relay calls"]
         WSDK --> WCLIENT
         WSDK --> PCLIENT
         WSDK --> RCLIENT
     end
 
     subgraph "relay-backend (NestJS)"
-        WA[/webauthn/*\nChallenge + verify]
-        REL[/relay/submit\n+ /relay/status]
-        SES[/sessions\nSession key CRUD]
-        REC[/recovery/*\nPropose + approve]
-        IDX[/wallets/:credentialId\nAddress lookup]
-        WK[/.well-known/*\nAASA + assetlinks]
+        WA["/webauthn/*<br/>Challenge + verify"]
+        REL["/relay/submit<br/>+ /relay/status"]
+        SES["/sessions<br/>Session key CRUD"]
+        REC["/recovery/*<br/>Propose + approve"]
+        IDX["/wallets/:credentialId<br/>Address lookup"]
+        WK["/.well-known/*<br/>AASA + assetlinks"]
     end
 
     subgraph "Stellar Network"
         SRPC[Soroban RPC]
-        HRZ[Horizon API\nTransaction history]
+        HRZ["Horizon API<br/>Transaction history"]
         FACTORY[FactoryContract]
         WALLET_C[WalletContract]
         POLICY_C[PolicyContract]
     end
 
     subgraph "Device"
-        ENCLAVE[Secure Enclave / StrongBox\nPasskey never leaves here]
+        ENCLAVE["Secure Enclave / StrongBox<br/>Passkey never leaves here"]
     end
 
     SDK_CLIENT --> WSDK
