@@ -64,7 +64,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.enabled == 'true'
         with:
-          node-version: 22
+          node-version: 22.14.0
           cache: pnpm
           cache-dependency-path: mobile-app/pnpm-lock.yaml
       - uses: expo/expo-github-action@v8

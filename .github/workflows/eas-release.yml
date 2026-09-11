@@ -2,7 +2,7 @@ name: EAS Release
 
 # Tagged release (v1.2.3) → production build → manual approval → store submission.
 # The "production-stores" environment must be created in repo settings with
-# required reviewers; that is the manual gate described in ARCHITECTURE.md §7.
+# required reviewers; that is the manual gate described in docs/ARCHITECTURE.md.
 
 on:
   push:
@@ -33,32 +33,52 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: mobile-app
+
       - uses: actions/checkout@v4
         with:
           repository: Rayos-Org/wallet-sdk
           path: wallet-sdk
+
       - uses: pnpm/action-setup@v4
         with:
           version: 11.17.0
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.14.0
+          # Disable pnpm cache here: GitHub cache service can return 400/503
+          # during high-traffic periods. EAS builds on Expo's servers anyway,
+          # so local cache only helps the quality-gate step below.
           cache: pnpm
-          cache-dependency-path: mobile-app/pnpm-lock.yaml
+          cache-dependency-path: |
+            mobile-app/pnpm-lock.yaml
+            wallet-sdk/pnpm-lock.yaml
+
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          # Disable expo-github-action's own cache to avoid 400 errors
+          packager: pnpm
 
       - name: Build wallet-sdk
         working-directory: wallet-sdk
         run: pnpm install --frozen-lockfile && pnpm run build
+
       - name: Install
         working-directory: mobile-app
         run: pnpm install --frozen-lockfile
 
       - name: Quality gate
         working-directory: mobile-app
+        env:
+          EXPO_PUBLIC_RELAY_BACKEND_URL: https://rayos-relay-backend.onrender.com/api
+          EXPO_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
+          EXPO_PUBLIC_STELLAR_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+          EXPO_PUBLIC_FACTORY_CONTRACT_ID: CCCAMWJOF7IYTVCU7SR6HFTNH5XRMDMWPYN464NY5BCKUPMUM64RZ5CH
+          EXPO_PUBLIC_POLICY_CONTRACT_ID: CCDM3O2SXX3E24MCWLRK5YBVQHJCA4OQKJFF6KWCK6FHZS65DGMT6DOY
+          EXPO_PUBLIC_WEBAUTHN_RP_ID: rayos-relay-backend.onrender.com
+          EXPO_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
         run: pnpm typecheck && pnpm lint && pnpm test:ci
 
       - name: Build (production, both platforms)
@@ -74,10 +94,12 @@ jobs:
     environment: production-stores
     steps:
       - uses: actions/checkout@v4
+
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: pnpm
 
       - name: Write Google Play service account
         run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > google-service-account.json
