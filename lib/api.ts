@@ -31,7 +31,11 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
   try {
     const res = await fetch(`${config.RELAY_BACKEND_URL}${path}`, {
       method,
-      headers: { Accept: "application/json", ...(body ? { "Content-Type": "application/json" } : {}), ...headers },
+      headers: {
+        Accept: "application/json",
+        ...(body ? { "Content-Type": "application/json" } : {}),
+        ...headers,
+      },
       body: body ? JSON.stringify(body) : undefined,
       signal: controller.signal,
     });
@@ -58,7 +62,10 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
   } catch (err) {
     if (err instanceof ApiError) throw err;
     if ((err as Error).name === "AbortError") {
-      throw new ApiError("The relay took too long to respond. Check your connection and try again.", 0);
+      throw new ApiError(
+        "The relay took too long to respond. Check your connection and try again.",
+        0
+      );
     }
     throw new ApiError((err as Error).message || "Network error", 0);
   } finally {

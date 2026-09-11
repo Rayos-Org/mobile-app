@@ -167,7 +167,15 @@ export function buildTheme(scheme: ColorScheme): Theme {
 export function alpha(hex: string, a: number): string {
   if (hex.startsWith("rgba")) return hex;
   const h = hex.replace("#", "");
-  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  const n = parseInt(
+    h.length === 3
+      ? h
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : h,
+    16
+  );
   const r = (n >> 16) & 255;
   const g = (n >> 8) & 255;
   const b = n & 255;

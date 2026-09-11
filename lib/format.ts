@@ -5,7 +5,11 @@ export function formatXLM(stroops?: bigint | number | string | null, maxDecimals
   const negative = n < 0n;
   const abs = negative ? -n : n;
   const whole = abs / 10_000_000n;
-  const frac = (abs % 10_000_000n).toString().padStart(7, "0").slice(0, maxDecimals).replace(/0+$/, "");
+  const frac = (abs % 10_000_000n)
+    .toString()
+    .padStart(7, "0")
+    .slice(0, maxDecimals)
+    .replace(/0+$/, "");
   const wholeStr = whole.toLocaleString("en-US");
   return `${negative ? "-" : ""}${wholeStr}${frac ? "." + frac : ""}`;
 }
