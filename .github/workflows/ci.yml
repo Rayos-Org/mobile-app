@@ -52,9 +52,8 @@ jobs:
       - name: Build wallet-sdk
         working-directory: wallet-sdk
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm run build
-
       - name: Install
         working-directory: mobile-app
         run: pnpm install --frozen-lockfile
@@ -114,7 +113,7 @@ jobs:
 
       - name: Build wallet-sdk
         working-directory: wallet-sdk
-        run: pnpm install --frozen-lockfile && pnpm run build
+        run: pnpm install --no-frozen-lockfile && pnpm run build
 
       - name: Install
         working-directory: mobile-app

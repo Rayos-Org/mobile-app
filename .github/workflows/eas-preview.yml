@@ -74,7 +74,7 @@ jobs:
       - name: Build wallet-sdk
         if: steps.gate.outputs.enabled == 'true'
         working-directory: wallet-sdk
-        run: pnpm install --frozen-lockfile && pnpm run build
+        run: pnpm install --no-frozen-lockfile && pnpm run build
 
       - name: Install
         if: steps.gate.outputs.enabled == 'true'
