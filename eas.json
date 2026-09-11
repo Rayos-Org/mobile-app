@@ -1,23 +1,70 @@
 {
-  "cli": { "version": ">= 13.0.0" },
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
   "build": {
+    "base": {
+      "node": "22.12.0",
+      "pnpm": "11.17.0",
+      "env": {
+        "EXPO_PUBLIC_SOROBAN_RPC_URL": "https://soroban-testnet.stellar.org",
+        "EXPO_PUBLIC_STELLAR_NETWORK_PASSPHRASE": "Test SDF Network ; September 2015",
+        "EXPO_PUBLIC_HORIZON_URL": "https://horizon-testnet.stellar.org",
+        "EXPO_PUBLIC_FACTORY_CONTRACT_ID": "CCCAMWJOF7IYTVCU7SR6HFTNH5XRMDMWPYN464NY5BCKUPMUM64RZ5CH",
+        "EXPO_PUBLIC_POLICY_CONTRACT_ID": "CCDM3O2SXX3E24MCWLRK5YBVQHJCA4OQKJFF6KWCK6FHZS65DGMT6DOY"
+      }
+    },
     "development": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
-      "env": { "APP_ENV": "development" }
+      "channel": "development",
+      "env": {
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_RELAY_BACKEND_URL": "https://rayos-relay-backend.onrender.com/api",
+        "EXPO_PUBLIC_WEBAUTHN_RP_ID": "rayos-relay-backend.onrender.com",
+        "PASSKEY_DOMAIN": "rayos-relay-backend.onrender.com"
+      },
+      "ios": { "simulator": true },
+      "android": { "buildType": "apk" }
     },
     "preview": {
+      "extends": "base",
       "distribution": "internal",
-      "env": { "APP_ENV": "preview" }
+      "channel": "preview",
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_RELAY_BACKEND_URL": "https://rayos-relay-backend.onrender.com/api",
+        "EXPO_PUBLIC_WEBAUTHN_RP_ID": "rayos-relay-backend.onrender.com",
+        "PASSKEY_DOMAIN": "rayos-relay-backend.onrender.com"
+      },
+      "android": { "buildType": "apk" }
     },
     "production": {
-      "env": { "APP_ENV": "production" }
+      "extends": "base",
+      "channel": "production",
+      "autoIncrement": true,
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_RELAY_BACKEND_URL": "https://rayos-relay-backend.onrender.com/api",
+        "EXPO_PUBLIC_WEBAUTHN_RP_ID": "rayos-relay-backend.onrender.com",
+        "PASSKEY_DOMAIN": "rayos-relay-backend.onrender.com"
+      }
     }
   },
   "submit": {
     "production": {
-      "ios": { "appleId": "<TODO>", "ascAppId": "<TODO>" },
-      "android": { "serviceAccountKeyPath": "<TODO>" }
+      "ios": {
+        "appleId": "$APPLE_ID",
+        "ascAppId": "$ASC_APP_ID",
+        "appleTeamId": "$APPLE_TEAM_ID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
     }
   }
 }
