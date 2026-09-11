@@ -15,10 +15,17 @@ export function OnboardingHeader({ backTo }: { backTo?: string }) {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Back"
-        onPress={() => (router.canGoBack() ? router.back() : router.replace((backTo ?? "/") as any))}
+        onPress={() =>
+          router.canGoBack() ? router.back() : router.replace((backTo ?? "/") as any)
+        }
         style={({ pressed }) => [
           styles.back,
-          { borderColor: colors.border, backgroundColor: alpha(colors.card, 0.7), borderRadius: radius.lg, opacity: pressed ? 0.7 : 1 },
+          {
+            borderColor: colors.border,
+            backgroundColor: alpha(colors.card, 0.7),
+            borderRadius: radius.lg,
+            opacity: pressed ? 0.7 : 1,
+          },
         ]}
       >
         <Ionicons name="arrow-back" size={18} color={colors.foreground} />

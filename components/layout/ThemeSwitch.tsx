@@ -21,7 +21,14 @@ export function ThemeSwitch({ compact = false }: { compact?: boolean }) {
   const { preference, setPreference } = useThemePreference();
 
   if (compact) {
-    const next: ThemePreference = preference === "system" ? (isDark ? "light" : "dark") : preference === "dark" ? "light" : "dark";
+    const next: ThemePreference =
+      preference === "system"
+        ? isDark
+          ? "light"
+          : "dark"
+        : preference === "dark"
+          ? "light"
+          : "dark";
     return (
       <Pressable
         accessibilityRole="button"
@@ -32,16 +39,30 @@ export function ThemeSwitch({ compact = false }: { compact?: boolean }) {
         }}
         style={({ pressed }) => [
           styles.compact,
-          { borderColor: colors.border, backgroundColor: alpha(colors.card, 0.7), borderRadius: radius.lg, opacity: pressed ? 0.7 : 1 },
+          {
+            borderColor: colors.border,
+            backgroundColor: alpha(colors.card, 0.7),
+            borderRadius: radius.lg,
+            opacity: pressed ? 0.7 : 1,
+          },
         ]}
       >
-        <Ionicons name={isDark ? "moon" : "sunny"} size={18} color={isDark ? "#A5B4FC" : "#F59E0B"} />
+        <Ionicons
+          name={isDark ? "moon" : "sunny"}
+          size={18}
+          color={isDark ? "#A5B4FC" : "#F59E0B"}
+        />
       </Pressable>
     );
   }
 
   return (
-    <View style={[styles.track, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.xl }]}>
+    <View
+      style={[
+        styles.track,
+        { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.xl },
+      ]}
+    >
       {OPTIONS.map((o) => {
         const active = o.value === preference;
         return (
@@ -59,8 +80,16 @@ export function ThemeSwitch({ compact = false }: { compact?: boolean }) {
               active ? { backgroundColor: colors.primary } : null,
             ]}
           >
-            <Ionicons name={o.icon} size={16} color={active ? colors.primaryForeground : colors.mutedForeground} />
-            <Text variant="small" weight="600" style={{ color: active ? colors.primaryForeground : colors.mutedForeground }}>
+            <Ionicons
+              name={o.icon}
+              size={16}
+              color={active ? colors.primaryForeground : colors.mutedForeground}
+            />
+            <Text
+              variant="small"
+              weight="600"
+              style={{ color: active ? colors.primaryForeground : colors.mutedForeground }}
+            >
               {o.label}
             </Text>
           </Pressable>
@@ -71,7 +100,20 @@ export function ThemeSwitch({ compact = false }: { compact?: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  compact: { width: 40, height: 40, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  compact: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
   track: { flexDirection: "row", padding: 4, borderWidth: 1 },
-  option: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, height: 38 },
+  option: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    height: 38,
+  },
 });

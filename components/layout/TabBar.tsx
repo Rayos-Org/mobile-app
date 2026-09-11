@@ -26,7 +26,10 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View pointerEvents="box-none" style={[styles.host, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+    <View
+      pointerEvents="box-none"
+      style={[styles.host, { paddingBottom: Math.max(insets.bottom, 12) }]}
+    >
       <View
         style={[
           styles.bar,
@@ -50,7 +53,11 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               icon={focused ? meta.iconActive : meta.icon}
               testID={`tab-${route.name}`}
               onPress={() => {
-                const event = navigation.emit({ type: "tabPress", target: route.key, canPreventDefault: true });
+                const event = navigation.emit({
+                  type: "tabPress",
+                  target: route.key,
+                  canPreventDefault: true,
+                });
                 if (!focused && !event.defaultPrevented) {
                   Haptics.selectionAsync().catch(() => {});
                   navigation.navigate(route.name);
@@ -95,7 +102,10 @@ function TabItem({
       <Animated.View
         style={[
           styles.pill,
-          { borderRadius: radius.xl, backgroundColor: focused ? alpha(colors.primary, 0.14) : "transparent" },
+          {
+            borderRadius: radius.xl,
+            backgroundColor: focused ? alpha(colors.primary, 0.14) : "transparent",
+          },
           anim,
         ]}
       >
