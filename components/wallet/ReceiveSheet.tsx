@@ -31,7 +31,10 @@ export function ReceiveSheet({
       }
     >
       <View
-        style={[styles.box, { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.xl }]}
+        style={[
+          styles.box,
+          { backgroundColor: colors.muted, borderColor: colors.border, borderRadius: radius.xl },
+        ]}
       >
         <Text variant="caption" tone="muted">
           Wallet address

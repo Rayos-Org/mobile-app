@@ -28,7 +28,12 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
   };
 
   return (
-    <View style={[styles.card, { borderRadius: radius["3xl"], borderColor: alpha("#FFFFFF", isDark ? 0.1 : 0.4) }]}>
+    <View
+      style={[
+        styles.card,
+        { borderRadius: radius["3xl"], borderColor: alpha("#FFFFFF", isDark ? 0.1 : 0.4) },
+      ]}
+    >
       <LinearGradient
         colors={isDark ? ["#3730A3", "#5B21B6", "#0E7490"] : ["#4F46E5", "#6D4AED", "#0891B2"]}
         start={{ x: 0, y: 0 }}
@@ -55,7 +60,12 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
 
       {isLoading ? (
         <View style={{ marginTop: 14, gap: 8 }}>
-          <Skeleton width={180} height={44} radius={12} style={{ backgroundColor: alpha("#FFFFFF", 0.15) }} />
+          <Skeleton
+            width={180}
+            height={44}
+            radius={12}
+            style={{ backgroundColor: alpha("#FFFFFF", 0.15) }}
+          />
         </View>
       ) : isError ? (
         <View style={{ marginTop: 14 }}>
@@ -82,7 +92,11 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
         accessibilityLabel="Copy wallet address"
         style={({ pressed }) => [
           styles.addressChip,
-          { backgroundColor: alpha("#000", pressed ? 0.35 : 0.22), borderColor: alpha("#FFFFFF", 0.14), borderRadius: radius.lg },
+          {
+            backgroundColor: alpha("#000", pressed ? 0.35 : 0.22),
+            borderColor: alpha("#FFFFFF", 0.14),
+            borderRadius: radius.lg,
+          },
         ]}
       >
         <Text variant="mono" style={{ color: alpha("#FFFFFF", 0.9), flex: 1 }} numberOfLines={1}>
@@ -101,7 +115,14 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
       {!checking && exists === false ? (
         <Pressable
           onPress={() => Linking.openURL(`${FRIENDBOT_URL}?addr=${walletAddress}`)}
-          style={[styles.fundNote, { backgroundColor: alpha("#FBBF24", 0.16), borderColor: alpha("#FBBF24", 0.4), borderRadius: radius.lg }]}
+          style={[
+            styles.fundNote,
+            {
+              backgroundColor: alpha("#FBBF24", 0.16),
+              borderColor: alpha("#FBBF24", 0.4),
+              borderRadius: radius.lg,
+            },
+          ]}
         >
           <Ionicons name="water-outline" size={16} color="#FDE68A" />
           <Text variant="small" style={{ color: "#FEF3C7", flex: 1 }}>
@@ -126,7 +147,10 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
         <Button
           fullWidth
           variant="outline"
-          style={[styles.action, { backgroundColor: alpha("#FFFFFF", 0.12), borderColor: alpha("#FFFFFF", 0.3) }]}
+          style={[
+            styles.action,
+            { backgroundColor: alpha("#FFFFFF", 0.12), borderColor: alpha("#FFFFFF", 0.3) },
+          ]}
           onPress={onReceive}
           icon={<Ionicons name="arrow-down" size={18} color="#fff" />}
         >
@@ -141,11 +165,32 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
 
 const styles = StyleSheet.create({
   card: { padding: 22, overflow: "hidden", borderWidth: 1 },
-  bloom: { position: "absolute", width: 260, height: 260, borderRadius: 130, top: -120, right: -80 },
+  bloom: {
+    position: "absolute",
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    top: -120,
+    right: -80,
+  },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   balanceRow: { flexDirection: "row", alignItems: "flex-end", gap: 8, marginTop: 10 },
-  addressChip: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, marginTop: 16, borderWidth: 1 },
-  fundNote: { flexDirection: "row", alignItems: "center", gap: 8, padding: 12, marginTop: 12, borderWidth: 1 },
+  addressChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 12,
+    marginTop: 16,
+    borderWidth: 1,
+  },
+  fundNote: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 12,
+    marginTop: 12,
+    borderWidth: 1,
+  },
   actions: { flexDirection: "row", gap: 10, marginTop: 16 },
   action: { flex: 1 },
 });

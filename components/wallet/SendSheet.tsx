@@ -71,7 +71,13 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
       description="Send to any Stellar address on testnet."
       footer={
         step === "form" ? (
-          <Button size="lg" fullWidth disabled={!toValid || !amountValid} onPress={submit} testID="send-continue">
+          <Button
+            size="lg"
+            fullWidth
+            disabled={!toValid || !amountValid}
+            onPress={submit}
+            testID="send-continue"
+          >
             Review & sign
           </Button>
         ) : step === "submitted" ? (
@@ -91,7 +97,9 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
             autoCapitalize="characters"
             autoCorrect={false}
             mono
-            error={to.length > 0 && !toValid ? "Enter a valid 56-character Stellar address" : undefined}
+            error={
+              to.length > 0 && !toValid ? "Enter a valid 56-character Stellar address" : undefined
+            }
           />
           <Input
             label="Amount"
@@ -106,7 +114,15 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
             }
             error={amount.length > 0 && !amountValid ? "Enter an amount greater than 0" : undefined}
           />
-          <View style={[styles.note, { backgroundColor: alpha(colors.primary, 0.08), borderColor: alpha(colors.primary, 0.25) }]}>
+          <View
+            style={[
+              styles.note,
+              {
+                backgroundColor: alpha(colors.primary, 0.08),
+                borderColor: alpha(colors.primary, 0.25),
+              },
+            ]}
+          >
             <Ionicons name="finger-print" size={16} color={colors.primary} />
             <Text variant="small" tone="muted" style={{ flex: 1 }}>
               You’ll confirm with your passkey. Fees are sponsored by the relay.
@@ -115,11 +131,18 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
         </View>
       )}
 
-      {step === "passkey" && <PasskeyPrompt processing message="Sign this transaction with your passkey…" />}
+      {step === "passkey" && (
+        <PasskeyPrompt processing message="Sign this transaction with your passkey…" />
+      )}
 
       {step === "submitted" && (
         <View style={styles.done}>
-          <View style={[styles.disc, { backgroundColor: colors.successSoft, borderColor: alpha(colors.success, 0.35) }]}>
+          <View
+            style={[
+              styles.disc,
+              { backgroundColor: colors.successSoft, borderColor: alpha(colors.success, 0.35) },
+            ]}
+          >
             <Ionicons name="checkmark" size={30} color={colors.success} />
           </View>
           <Text variant="h2" align="center">
@@ -135,7 +158,13 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
                   Status
                 </Text>
                 <Badge
-                  variant={status?.status === "success" ? "success" : status?.status === "failed" ? "destructive" : "warning"}
+                  variant={
+                    status?.status === "success"
+                      ? "success"
+                      : status?.status === "failed"
+                        ? "destructive"
+                        : "warning"
+                  }
                   dot
                 >
                   {(status?.status ?? "pending").toUpperCase()}
@@ -144,7 +173,9 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
               <Button
                 variant="ghost"
                 onPress={() => Linking.openURL(`${EXPLORER_URL}/tx/${txHash}`)}
-                iconRight={<Ionicons name="open-outline" size={14} color={colors.mutedForeground} />}
+                iconRight={
+                  <Ionicons name="open-outline" size={14} color={colors.mutedForeground} />
+                }
               >
                 View on Stellar Expert
               </Button>
@@ -158,8 +189,22 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
 
 const styles = StyleSheet.create({
   stack: { gap: 14 },
-  note: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 12, borderWidth: 1 },
+  note: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
   done: { alignItems: "center", gap: 10, paddingVertical: 10 },
-  disc: { width: 68, height: 68, borderRadius: 34, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  disc: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
   statusRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 6 },
 });

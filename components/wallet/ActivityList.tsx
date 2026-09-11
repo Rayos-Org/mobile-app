@@ -102,7 +102,11 @@ export function ActivityList({ walletAddress }: { walletAddress: string }) {
               onPress={() => Linking.openURL(`${EXPLORER_URL}/tx/${op.transaction_hash}`)}
               right={
                 amount ? (
-                  <Text variant="bodyMedium" weight="600" tone={d.tone === "muted" ? "default" : d.tone}>
+                  <Text
+                    variant="bodyMedium"
+                    weight="600"
+                    tone={d.tone === "muted" ? "default" : d.tone}
+                  >
                     {d.sign}
                     {formatAmount(amount)} {code}
                   </Text>
