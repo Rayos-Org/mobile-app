@@ -48,7 +48,11 @@ export default function WalletScreen() {
       <SignersCard walletAddress={walletAddress} />
 
       <SendSheet open={sendOpen} onClose={() => setSendOpen(false)} />
-      <ReceiveSheet open={receiveOpen} onClose={() => setReceiveOpen(false)} walletAddress={walletAddress} />
+      <ReceiveSheet
+        open={receiveOpen}
+        onClose={() => setReceiveOpen(false)}
+        walletAddress={walletAddress}
+      />
     </Screen>
   );
 }

@@ -2,7 +2,17 @@ import { Alert, Linking, StyleSheet, View } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
-import { Badge, Button, Card, CardHeader, ListRow, Logo, Screen, Text, useToast } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  ListRow,
+  Logo,
+  Screen,
+  Text,
+  useToast,
+} from "@/components/ui";
 import { ThemeSwitch } from "@/components/layout/ThemeSwitch";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthStore } from "@/store/auth";
@@ -17,10 +27,14 @@ export default function SettingsScreen() {
   const { walletAddress, walletName, credentialId, clearAuth } = useAuthStore();
 
   const signOut = () =>
-    Alert.alert("Sign out?", "Your passkey stays on this device — you can sign back in with one tap.", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Sign out", style: "destructive", onPress: clearAuth },
-    ]);
+    Alert.alert(
+      "Sign out?",
+      "Your passkey stays on this device — you can sign back in with one tap.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Sign out", style: "destructive", onPress: clearAuth },
+      ]
+    );
 
   return (
     <Screen title="Settings" subtitle="Appearance, wallet and about">
@@ -82,8 +96,18 @@ export default function SettingsScreen() {
           icon={<Ionicons name="git-network-outline" size={18} color={colors.primary} />}
           style={{ paddingHorizontal: 18, paddingTop: 18, marginBottom: 6 }}
         />
-        <ListRow icon={<Ionicons name="server-outline" size={16} color={colors.primary} />} title={hostOf(config.RELAY_BACKEND_URL)} subtitle="Relay backend" mono />
-        <ListRow icon={<Ionicons name="planet-outline" size={16} color={colors.primary} />} title={hostOf(config.SOROBAN_RPC_URL)} subtitle="Soroban RPC" mono />
+        <ListRow
+          icon={<Ionicons name="server-outline" size={16} color={colors.primary} />}
+          title={hostOf(config.RELAY_BACKEND_URL)}
+          subtitle="Relay backend"
+          mono
+        />
+        <ListRow
+          icon={<Ionicons name="planet-outline" size={16} color={colors.primary} />}
+          title={hostOf(config.SOROBAN_RPC_URL)}
+          subtitle="Soroban RPC"
+          mono
+        />
         <ListRow
           icon={<Ionicons name="cube-outline" size={16} color={colors.primary} />}
           title={shortAddress(config.FACTORY_CONTRACT_ID, 8, 6)}
@@ -120,7 +144,14 @@ export default function SettingsScreen() {
         />
       </Card>
 
-      <Button variant="destructive" fullWidth size="lg" onPress={signOut} icon={<Ionicons name="log-out-outline" size={18} color={colors.destructive} />} testID="sign-out">
+      <Button
+        variant="destructive"
+        fullWidth
+        size="lg"
+        onPress={signOut}
+        icon={<Ionicons name="log-out-outline" size={18} color={colors.destructive} />}
+        testID="sign-out"
+      >
         Sign out
       </Button>
 

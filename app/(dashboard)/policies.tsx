@@ -11,7 +11,10 @@ export default function PoliciesScreen() {
   const [tab, setTab] = useState<Tab>("limits");
 
   return (
-    <Screen title="Policies" subtitle="Spend limits, session keys and allow-lists — enforced on-chain">
+    <Screen
+      title="Policies"
+      subtitle="Spend limits, session keys and allow-lists — enforced on-chain"
+    >
       <SegmentedControl<Tab>
         value={tab}
         onChange={setTab}
