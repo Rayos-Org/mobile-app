@@ -35,8 +35,18 @@ cd ../mobile-app
 pnpm install
 ```
 
-> **Why sibling clone?** `package.json` declares `"@rayos/wallet-sdk": "file:../wallet-sdk"`.
-> pnpm resolves it via the filesystem, so both repos must be checked out at the same level.
+> **How the SDK is consumed.** `package.json` pins `@rayos/wallet-sdk` to a packed tarball in
+> `vendor/` (`file:vendor/rayos-wallet-sdk-<version>.tgz`). EAS Build and GitHub Actions only see
+> this repo, so a `file:../wallet-sdk` link cannot resolve there — the tarball travels with the
+> repo instead. The npm release (`0.1.1`) predates the `PasskeyProvider` seam this app needs.
+>
+> After pulling SDK changes, re-vendor from the sibling checkout and commit `vendor/` + the lockfile:
+>
+> ```bash
+> pnpm sdk:vendor && pnpm install
+> ```
+>
+> Once a newer SDK is published to npm, switch the dependency back to a semver range and delete `vendor/`.
 
 ---
 
@@ -132,7 +142,7 @@ All checks except `e2e` run automatically in CI on every PR.
 
 ```bash
 eas login                    # expo.dev account
-eas init                     # creates EAS project, writes EAS_PROJECT_ID to app.config.ts
+eas init                     # only if you fork: links a new project (id is baked into app.config.ts)
 eas credentials -p ios       # provision distribution cert + provisioning profile
 eas credentials -p android   # generate Android keystore
 ```
@@ -142,7 +152,7 @@ Then add these GitHub secrets/variables to the repo:
 | Type | Name | Where to get it |
 |---|---|---|
 | Secret | `EXPO_TOKEN` | expo.dev → Access Tokens → Create |
-| Secret | `EAS_PROJECT_ID` | output of `eas init` |
+| Secret | `EAS_PROJECT_ID` | optional — overrides the id baked into `app.config.ts` (`6113f1c7-…`, rayos-organization/rayos-wallet) |
 | Variable | `EXPO_OWNER` | your expo.dev org slug |
 | Secret | `APPLE_ID` | your Apple ID email |
 | Secret | `ASC_APP_ID` | App Store Connect → App → App Information → Apple ID |

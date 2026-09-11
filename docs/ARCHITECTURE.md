@@ -242,7 +242,7 @@ pnpm e2e            # maestro test e2e/flows (needs device or simulator running)
 
 | Repo | Nature of dependency |
 |---|---|
-| [`wallet-sdk`](https://github.com/Rayos-Org/wallet-sdk) | `file:../wallet-sdk` — `PasskeyProvider`, `WalletSdk`, all types |
+| [`wallet-sdk`](https://github.com/Rayos-Org/wallet-sdk) | Vendored tarball (`vendor/`, see docs/SETUP.md) — `PasskeyProvider`, `WalletSdk`, all types |
 | [`relay-backend`](https://github.com/Rayos-Org/relay-backend) | All API calls: WebAuthn, relay, sessions, recovery, well-known files |
 | [`wallet-contracts`](https://github.com/Rayos-Org/wallet-contracts) | Indirect — JS bindings consumed via `wallet-sdk` |
 | [`infra`](https://github.com/Rayos-Org/infra) | EAS build workflow reused; environment variable naming convention |
