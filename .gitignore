@@ -43,3 +43,9 @@ yarn-error.*
 /android
 AGENTS.md
 CLAUDE.md
+
+# build outputs / CI artifacts
+dist-web*/
+coverage/
+google-service-account.json
+*.tgz

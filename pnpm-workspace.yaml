@@ -2,9 +2,9 @@
 allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
-  - '@expo/cli@57.0.24'
-  - '@expo/fingerprint@0.20.13'
-  - '@expo/prebuild-config@57.0.16'
+  - "@expo/cli@57.0.24"
+  - "@expo/fingerprint@0.20.13"
+  - "@expo/prebuild-config@57.0.16"
   - expo-asset@57.0.17
   - expo-constants@57.0.18
   - expo-file-system@57.0.7
@@ -27,7 +27,7 @@ minimumReleaseAgeExclude:
   - expo-eas-client@57.0.4
   - expo-structured-headers@57.0.1
   - expo-updates@57.0.22
-  - '@expo/ui@57.0.18'
+  - "@expo/ui@57.0.18"
   - expo-application@57.0.3
   - expo-crypto@57.0.3
   - expo-glass-effect@57.0.3

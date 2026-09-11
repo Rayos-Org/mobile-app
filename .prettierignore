@@ -5,3 +5,6 @@ ios
 .expo
 coverage
 pnpm-lock.yaml
+dist-web*
+assets
+*.md
