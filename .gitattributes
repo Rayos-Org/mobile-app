@@ -1,0 +1,9 @@
+# Ensure shell scripts always have LF line endings (critical for bash on Linux/macOS/EAS)
+*.sh text eol=lf
+
+# Default line ending for all text files
+* text=auto
+
+# Explicitly keep Windows-style for these
+*.bat text eol=crlf
+*.cmd text eol=crlf

@@ -13,10 +13,13 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
  *                          and /.well-known/assetlinks.json (the relay-backend)
  */
 
-const APP_ENV = process.env.APP_ENV ?? "development";
+const APP_ENV = process.env.APP_ENV || "development";
 const IS_PROD = APP_ENV === "production";
-const PASSKEY_DOMAIN = process.env.PASSKEY_DOMAIN ?? "rayos-relay-backend.onrender.com";
-const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID;
+const PASSKEY_DOMAIN = process.env.PASSKEY_DOMAIN || "rayos-relay-backend.onrender.com";
+// EAS project (rayos-organization/rayos-wallet). Baked in so EAS Build servers and
+// CI resolve the same project without needing the env var; env still overrides.
+const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID || "6113f1c7-4ae2-4031-b79c-13f3e653a79a";
+const EXPO_OWNER = process.env.EXPO_OWNER || "rayos-organization";
 
 // Brand colours — keep in sync with lib/theme.ts
 const LIGHT_BG = "#F8FAFC";
@@ -32,14 +35,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   icon: "./assets/icon.png",
   userInterfaceStyle: "automatic",
   backgroundColor: LIGHT_BG,
-  ...(EAS_PROJECT_ID
-    ? {
-        owner: process.env.EXPO_OWNER,
-        extra: { eas: { projectId: EAS_PROJECT_ID } },
-        updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
-        runtimeVersion: { policy: "appVersion" },
-      }
-    : {}),
+  owner: EXPO_OWNER,
+  extra: { eas: { projectId: EAS_PROJECT_ID } },
+  updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
+  runtimeVersion: { policy: "appVersion" },
 
   ios: {
     supportsTablet: false,

@@ -12,8 +12,8 @@ importers:
         specifier: ^15.1.1
         version: 15.1.1(expo-font@57.0.4)(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
       '@rayos/wallet-sdk':
-        specifier: file:../wallet-sdk
-        version: file:../wallet-sdk(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+        specifier: file:vendor/rayos-wallet-sdk-0.1.1.tgz
+        version: file:vendor/rayos-wallet-sdk-0.1.1.tgz(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       '@react-native-masked-view/masked-view':
         specifier: 0.3.2
         version: 0.3.2(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
@@ -1229,8 +1229,9 @@ packages:
       '@types/react':
         optional: true
 
-  '@rayos/wallet-sdk@file:../wallet-sdk':
-    resolution: {directory: ../wallet-sdk, type: directory}
+  '@rayos/wallet-sdk@file:vendor/rayos-wallet-sdk-0.1.1.tgz':
+    resolution: {integrity: sha512-cybhZndXh64xcw10+rSC/1ieMclc8ZXKQ7ZzXD/DqIoeErj49QbhAbg3HWNVo43AzT7GcQCZLgsmaja/+VZi1w==, tarball: file:vendor/rayos-wallet-sdk-0.1.1.tgz}
+    version: 0.1.1
     engines: {node: '>=24'}
 
   '@react-native-masked-view/masked-view@0.3.2':
@@ -6473,7 +6474,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.18
 
-  '@rayos/wallet-sdk@file:../wallet-sdk(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)':
+  '@rayos/wallet-sdk@file:vendor/rayos-wallet-sdk-0.1.1.tgz(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@simplewebauthn/browser': 14.0.0
       '@stellar/stellar-sdk': 17.0.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)

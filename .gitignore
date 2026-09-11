@@ -49,3 +49,4 @@ dist-web*/
 coverage/
 google-service-account.json
 *.tgz
+!vendor/*.tgz
