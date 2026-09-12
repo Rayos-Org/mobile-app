@@ -43,6 +43,18 @@ jest.mock("expo-system-ui", () => ({
   getBackgroundColorAsync: jest.fn(async () => "#000000"),
 }));
 
+jest.mock("expo-image", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const React = require("react");
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { View } = require("react-native");
+  const Image = React.forwardRef((props: any, ref: any) =>
+    React.createElement(View, { ...props, ref, testID: props.testID ?? "expo-image" }),
+  );
+  Image.displayName = "Image";
+  return { Image };
+});
+
 // Config is read from EXPO_PUBLIC_* at import time.
 process.env.EXPO_PUBLIC_RELAY_BACKEND_URL ??= "https://relay.test/api";
 process.env.EXPO_PUBLIC_SOROBAN_RPC_URL ??= "https://soroban-testnet.stellar.org";
