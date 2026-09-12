@@ -28,7 +28,7 @@ const DARK_BG = "#070A12";
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: IS_PROD ? "Guardian Wallet" : `Guardian (${APP_ENV})`,
-  slug: "rayos-wallet",
+  slug: "rayos-mobile-wallet",
   scheme: "rayos",
   version: "1.0.0",
   orientation: "portrait",
