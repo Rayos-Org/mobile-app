@@ -38,6 +38,11 @@ jest.mock("expo-linear-gradient", () => {
   return { LinearGradient: (props: any) => React.createElement(View, props, props.children) };
 });
 
+jest.mock("expo-system-ui", () => ({
+  setBackgroundColorAsync: jest.fn(async () => {}),
+  getBackgroundColorAsync: jest.fn(async () => "#000000"),
+}));
+
 // Config is read from EXPO_PUBLIC_* at import time.
 process.env.EXPO_PUBLIC_RELAY_BACKEND_URL ??= "https://relay.test/api";
 process.env.EXPO_PUBLIC_SOROBAN_RPC_URL ??= "https://soroban-testnet.stellar.org";
