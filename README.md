@@ -20,13 +20,14 @@
 
 <br/>
 
-**[📱 Download Preview Build](#)** &nbsp;·&nbsp;
+**[🤖 Download Android APK/AAB](https://expo.dev/artifacts/eas/epUg8f2NsQt8ZsZp6qQAYPvXfprmKaroE0j3IxPNq_0.aab)** &nbsp;·&nbsp;
 **[🌐 Web Dashboard](https://github.com/Rayos-Org/web-dashboard)** &nbsp;·&nbsp;
 **[📖 Docs](docs/)** &nbsp;·&nbsp;
 **[🐛 Report Bug](https://github.com/Rayos-Org/mobile-app/issues/new?template=bug_report.yml)** &nbsp;·&nbsp;
 **[✨ Request Feature](https://github.com/Rayos-Org/mobile-app/issues/new?template=feature_request.yml)**
 
-> 🚀 **Preview Build:** _Deployment link coming soon — follow the repo to be notified._
+> 🚀 **Preview Build (ANDROID ONLY):** **[Download Android App (AAB)](https://expo.dev/artifacts/eas/epUg8f2NsQt8ZsZp6qQAYPvXfprmKaroE0j3IxPNq_0.aab)**
+> *Note: This build artifact is valid for 29 days from compilation. iOS preview builds are currently unsupported as they require a paid Apple Developer account.*
 
 </div>
 
@@ -47,7 +48,7 @@ This app is one piece of a larger open-source system. Here's how the repos conne
 | Repo | Role | How mobile uses it |
 |---|---|---|
 | **`mobile-app`** ← *you are here* | Native iOS & Android app | — |
-| [`wallet-sdk`](https://github.com/Rayos-Org/wallet-sdk) | Shared TypeScript SDK | `file:../wallet-sdk` — `WalletSdk` class, `PasskeyProvider` interface, all types |
+| [`wallet-sdk`](https://github.com/Rayos-Org/wallet-sdk) | Shared TypeScript SDK | Vendored tarball in `vendor/` (`pnpm sdk:vendor` to refresh) — `WalletSdk` class, `PasskeyProvider` interface, all types |
 | [`relay-backend`](https://github.com/Rayos-Org/relay-backend) | NestJS gasless relay API | All HTTP calls: WebAuthn, relay, sessions, recovery, `.well-known` files |
 | [`wallet-contracts`](https://github.com/Rayos-Org/wallet-contracts) | Soroban smart contracts (Rust) | Indirect — JS bindings consumed through `wallet-sdk` |
 | [`web-dashboard`](https://github.com/Rayos-Org/web-dashboard) | Next.js web app | Design token parity; same conceptual API contract |
