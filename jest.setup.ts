@@ -49,7 +49,7 @@ jest.mock("expo-image", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require("react-native");
   const Image = React.forwardRef((props: any, ref: any) =>
-    React.createElement(View, { ...props, ref, testID: props.testID ?? "expo-image" }),
+    React.createElement(View, { ...props, ref, testID: props.testID ?? "expo-image" })
   );
   Image.displayName = "Image";
   return { Image };
