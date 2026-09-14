@@ -1,10 +1,11 @@
 import * as Passkeys from "react-native-passkeys";
-import type {
-  PasskeyAssertion,
-  PasskeyCredential,
-  PasskeyProvider,
-  PasskeyRegistrationOptions,
-  PasskeySignOptions,
+import {
+  publicKeyFromAttestationObject,
+  type PasskeyAssertion,
+  type PasskeyAssertionOptions,
+  type PasskeyCredential,
+  type PasskeyProvider,
+  type PasskeyRegistrationOptions,
 } from "@rayos/wallet-sdk";
 import { config } from "@/lib/config";
 
@@ -13,8 +14,8 @@ import { config } from "@/lib/config";
  *
  * The SDK's browser implementation wraps @simplewebauthn/browser; this one
  * wraps react-native-passkeys (ASAuthorization on iOS, Credential Manager on
- * Android). Both return the same JSON shapes so everything above this seam
- * (hooks, flows) is identical to the web dashboard.
+ * Android). Both return standard WebAuthn JSON, so the SDK does the Stellar
+ * work (P-256 key extraction, Soroban auth-entry signing) identically.
  *
  * Passkeys only work on-device when the relying party serves
  *   /.well-known/apple-app-site-association  and  /.well-known/assetlinks.json
@@ -63,10 +64,8 @@ export async function createCredential(
       challenge: options.challenge,
       rp: { id: options.rp.id || config.WEBAUTHN_RP_ID, name: options.rp.name },
       user: options.user,
-      pubKeyCredParams: options.pubKeyCredParams ?? [
-        { type: "public-key", alg: -7 },
-        { type: "public-key", alg: -257 },
-      ],
+      // ES256 only — the wallet contract verifies P-256 signatures.
+      pubKeyCredParams: [{ type: "public-key", alg: -7 }],
       timeout: options.timeout ?? 60_000,
       authenticatorSelection: {
         authenticatorAttachment: "platform",
@@ -92,16 +91,17 @@ export async function createCredential(
       clientDataJSON: result.response.clientDataJSON,
       attestationObject: result.response.attestationObject,
     },
-    // Matches the SDK's browser provider: the contract-formatted key is derived
-    // server-side from attestationObject; the SDK only needs the field present.
-    publicKeyBytes: new Uint8Array(32),
+    // The contract-formatted (uncompressed P-256) key, parsed from the attestation.
+    publicKeyBytes: publicKeyFromAttestationObject(result.response.attestationObject),
   };
 }
 
-export async function signTransaction(
-  xdr: string,
-  options: PasskeySignOptions
-): Promise<PasskeyAssertion> {
+/**
+ * WebAuthn assertion over an arbitrary challenge. For on-chain authorisation
+ * the SDK passes the Soroban signature payload as the challenge; the wallet
+ * contract verifies the resulting signature.
+ */
+export async function getAssertion(options: PasskeyAssertionOptions): Promise<PasskeyAssertion> {
   if (!isPasskeySupported()) throw new PasskeyUnsupportedError();
 
   let result: Awaited<ReturnType<typeof Passkeys.get>>;
@@ -131,10 +131,7 @@ export async function signTransaction(
       signature: result.response.signature,
       userHandle: result.response.userHandle ?? undefined,
     },
-    // Same contract as the SDK's browser provider: the relay attaches the
-    // assertion to the XDR envelope; we hand back the XDR we were asked to sign.
-    signedXdr: xdr,
   };
 }
 
-export const nativePasskeyProvider: PasskeyProvider = { createCredential, signTransaction };
+export const nativePasskeyProvider: PasskeyProvider = { createCredential, getAssertion };

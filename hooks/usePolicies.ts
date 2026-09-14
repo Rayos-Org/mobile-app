@@ -42,7 +42,7 @@ export function useCreateSessionKey() {
       scope,
       expiresAt,
     }: CreateSessionParams) => {
-      const { assertion } = await assertWithPasskey(userHandle, credentialId, "session");
+      const { assertion } = await assertWithPasskey(userHandle, credentialId);
       return api<SessionKey>("/sessions", {
         method: "POST",
         body: { walletAddress, scope, expiresAt, signature: assertion.response.signature },
@@ -83,7 +83,7 @@ export function useSignPolicyChange() {
       credentialId: string;
       userHandle: string;
     }) => {
-      const { assertion } = await assertWithPasskey(userHandle, credentialId, "policy");
+      const { assertion } = await assertWithPasskey(userHandle, credentialId);
       return assertion;
     },
   });

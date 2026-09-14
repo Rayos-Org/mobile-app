@@ -4,9 +4,9 @@ import * as Clipboard from "expo-clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { Badge, Button, Skeleton, Text, useToast } from "@/components/ui";
 import { useTheme } from "@/hooks/useTheme";
-import { useAccountExists, useWallet } from "@/hooks/useWallet";
+import { useFaucet, useWallet } from "@/hooks/useWallet";
 import { formatXLM, shortAddress } from "@/lib/format";
-import { EXPLORER_URL, FRIENDBOT_URL } from "@/lib/config";
+import { EXPLORER_URL } from "@/lib/config";
 import { alpha } from "@/lib/theme";
 
 interface Props {
@@ -20,7 +20,22 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
   const { colors, radius, isDark } = useTheme();
   const toast = useToast();
   const { data, isLoading, isError } = useWallet(walletAddress);
-  const { data: exists, isLoading: checking } = useAccountExists(walletAddress);
+  const faucet = useFaucet();
+  const exists = data?.exists;
+  const unfunded = !!data && data.exists && data.balance === 0n;
+  const checking = isLoading;
+
+  const requestFaucet = async () => {
+    try {
+      const res = await faucet.mutateAsync(walletAddress);
+      toast.success(
+        "Testnet XLM received",
+        `${Number(res.amount) / 1e7} XLM · tx ${res.txHash.slice(0, 10)}…`
+      );
+    } catch (err) {
+      toast.error("Faucet failed", err instanceof Error ? err.message : "Try again in a minute");
+    }
+  };
 
   const copy = async () => {
     await Clipboard.setStringAsync(walletAddress);
@@ -48,6 +63,10 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
           Balance · Testnet
         </Text>
         {!checking && exists === false ? (
+          <Badge variant="destructive" dot>
+            Not deployed
+          </Badge>
+        ) : !checking && unfunded ? (
           <Badge variant="warning" dot>
             Unfunded
           </Badge>
@@ -112,21 +131,26 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
         </Pressable>
       </Pressable>
 
-      {!checking && exists === false ? (
+      {!checking && unfunded ? (
         <Pressable
-          onPress={() => Linking.openURL(`${FRIENDBOT_URL}?addr=${walletAddress}`)}
+          onPress={requestFaucet}
+          disabled={faucet.isPending}
+          testID="faucet-button"
           style={[
             styles.fundNote,
             {
               backgroundColor: alpha("#FBBF24", 0.16),
               borderColor: alpha("#FBBF24", 0.4),
               borderRadius: radius.lg,
+              opacity: faucet.isPending ? 0.7 : 1,
             },
           ]}
         >
           <Ionicons name="water-outline" size={16} color="#FDE68A" />
           <Text variant="small" style={{ color: "#FEF3C7", flex: 1 }}>
-            Fund with testnet XLM via Friendbot to activate this wallet →
+            {faucet.isPending
+              ? "Funding from the testnet faucet…"
+              : "Tap to get 100 testnet XLM from the faucet →"}
           </Text>
         </Pressable>
       ) : null}
@@ -138,6 +162,7 @@ export function BalanceCard({ walletAddress, onSend, onReceive }: Props) {
           style={[styles.action, { backgroundColor: "#fff" }]}
           haptic
           onPress={onSend}
+          disabled={!exists || unfunded}
           icon={<Ionicons name="arrow-up" size={18} color={colors.primary} />}
         >
           <Text variant="bodyMedium" weight="600" style={{ color: "#4F46E5" }}>

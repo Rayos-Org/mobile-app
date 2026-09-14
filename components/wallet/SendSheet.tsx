@@ -17,7 +17,7 @@ type Step = "form" | "passkey" | "submitted";
 export function SendSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { colors } = useTheme();
   const toast = useToast();
-  const { walletAddress, credentialId, userHandle } = useAuthStore();
+  const { walletAddress, credentialId } = useAuthStore();
   const send = useSendTransaction();
 
   const [step, setStep] = useState<Step>("form");
@@ -49,11 +49,10 @@ export function SendSheet({ open, onClose }: { open: boolean; onClose: () => voi
       const res = await send.mutateAsync({
         walletAddress,
         credentialId,
-        userHandle: userHandle ?? walletAddress,
         to: to.trim(),
         amount: amount.trim(),
       });
-      setTxHash(res.hash);
+      setTxHash(res.txHash);
       setStep("submitted");
       toast.success("Transaction submitted", "The relay is broadcasting it now.");
     } catch (err) {

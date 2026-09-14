@@ -56,7 +56,7 @@ export function useApproveRecovery() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ walletAddress, proposalId, credentialId, userHandle }: ApproveParams) => {
-      await assertWithPasskey(userHandle, credentialId, "recovery");
+      await assertWithPasskey(userHandle, credentialId);
       return api("/recovery/approve", { method: "POST", body: { walletAddress, proposalId } });
     },
     onSuccess: (_, { proposalId }) =>

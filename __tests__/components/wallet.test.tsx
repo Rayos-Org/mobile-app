@@ -5,18 +5,23 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import { ToastProvider } from "@/components/ui";
 import { BalanceCard } from "@/components/wallet/BalanceCard";
 import { ActivityList } from "@/components/wallet/ActivityList";
+import { walletSdk } from "@/lib/sdk-client";
+
+const ADDR = "C" + "A".repeat(55);
+const SPONSOR = "G" + "B".repeat(55);
 
 jest.mock("@/lib/sdk-client", () => ({
   walletSdk: {
-    getWalletState: jest.fn(async () => ({
-      address: "G",
-      signers: [],
-      balance: 12_405_000_000n, // 1,240.5 XLM
-    })),
+    getWalletState: jest.fn(),
+    getRecentTransfers: jest.fn(),
+    requestFaucet: jest.fn(),
   },
 }));
-
-const ADDR = "G" + "A".repeat(55);
+const mockSdk = walletSdk as unknown as {
+  getWalletState: jest.Mock;
+  getRecentTransfers: jest.Mock;
+  requestFaucet: jest.Mock;
+};
 
 function wrap(ui: React.ReactElement) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
@@ -29,77 +34,97 @@ function wrap(ui: React.ReactElement) {
   );
 }
 
-function mockHorizon(handler: (url: string) => { status: number; body: unknown }) {
-  global.fetch = jest.fn(async (url: string) => {
-    const { status, body } = handler(url);
-    const text = JSON.stringify(body);
-    return { ok: status < 400, status, text: async () => text, json: async () => body };
-  }) as any;
-}
+beforeEach(() => {
+  mockSdk.getWalletState.mockReset();
+  mockSdk.getRecentTransfers.mockReset();
+  mockSdk.requestFaucet.mockReset();
+});
 
 describe("BalanceCard", () => {
-  it("shows the SDK balance and the Unfunded state when Horizon 404s", async () => {
-    mockHorizon(() => ({ status: 404, body: {} }));
+  it("shows the contract balance, the Unfunded state, and offers the faucet", async () => {
+    mockSdk.getWalletState.mockResolvedValue({
+      address: ADDR,
+      signers: [{}],
+      balance: 0n,
+      exists: true,
+    });
+    mockSdk.requestFaucet.mockResolvedValue({ txHash: "abc", amount: "1000000000" });
     const onSend = jest.fn();
     const screen = await wrap(
       <BalanceCard walletAddress={ADDR} onSend={onSend} onReceive={() => {}} />
     );
 
-    await waitFor(() => expect(screen.getByTestId("balance-value")).toHaveTextContent("1,240.5"));
     await waitFor(() => expect(screen.getByText("Unfunded")).toBeTruthy());
+    expect(screen.getByTestId("balance-value")).toHaveTextContent("0");
+    // Send is disabled while the wallet is empty.
+    expect(screen.getByTestId("send-button")).toBeDisabled();
+
+    await fireEvent.press(screen.getByTestId("faucet-button"));
+    await waitFor(() => expect(mockSdk.requestFaucet).toHaveBeenCalledWith(ADDR));
+  });
+
+  it("shows Active with a funded balance and enables Send", async () => {
+    mockSdk.getWalletState.mockResolvedValue({
+      address: ADDR,
+      signers: [{}],
+      balance: 12_405_000_000n, // 1,240.5 XLM
+      exists: true,
+    });
+    const onSend = jest.fn();
+    const screen = await wrap(
+      <BalanceCard walletAddress={ADDR} onSend={onSend} onReceive={() => {}} />
+    );
+    await waitFor(() => expect(screen.getByText("Active")).toBeTruthy());
+    expect(screen.getByTestId("balance-value")).toHaveTextContent("1,240.5");
     await fireEvent.press(screen.getByTestId("send-button"));
     expect(onSend).toHaveBeenCalled();
   });
 
-  it("shows Active when the account exists", async () => {
-    mockHorizon(() => ({ status: 200, body: { id: ADDR } }));
+  it("flags a wallet that is not deployed", async () => {
+    mockSdk.getWalletState.mockResolvedValue({
+      address: ADDR,
+      signers: [],
+      balance: 0n,
+      exists: false,
+    });
     const screen = await wrap(
       <BalanceCard walletAddress={ADDR} onSend={() => {}} onReceive={() => {}} />
     );
-    await waitFor(() => expect(screen.getByText("Active")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("Not deployed")).toBeTruthy());
   });
 });
 
 describe("ActivityList", () => {
-  it("renders Horizon operations with direction and amount", async () => {
-    mockHorizon(() => ({
-      status: 200,
-      body: {
-        _embedded: {
-          records: [
-            {
-              id: "1",
-              type: "payment",
-              created_at: new Date().toISOString(),
-              transaction_hash: "h1",
-              from: "GCX4" + "B".repeat(52),
-              to: ADDR,
-              amount: "250.0000000",
-              asset_type: "native",
-            },
-            {
-              id: "2",
-              type: "payment",
-              created_at: new Date().toISOString(),
-              transaction_hash: "h2",
-              from: ADDR,
-              to: "GA7Q" + "C".repeat(52),
-              amount: "12.5000000",
-              asset_type: "native",
-            },
-          ],
-        },
+  it("renders on-chain transfers with direction and amount", async () => {
+    mockSdk.getRecentTransfers.mockResolvedValue([
+      {
+        at: new Date().toISOString(),
+        ledger: 2,
+        txHash: "h2",
+        from: ADDR,
+        to: SPONSOR,
+        amount: 25_000_000n,
+        direction: "out",
       },
-    }));
+      {
+        at: new Date().toISOString(),
+        ledger: 1,
+        txHash: "h1",
+        from: SPONSOR,
+        to: ADDR,
+        amount: 1_000_000_000n,
+        direction: "in",
+      },
+    ]);
     const screen = await wrap(<ActivityList walletAddress={ADDR} />);
-    await waitFor(() => expect(screen.getByText(/Received from GCX4/)).toBeTruthy());
-    expect(screen.getByText("+250 XLM")).toBeTruthy();
-    expect(screen.getByText(/Sent to GA7Q/)).toBeTruthy();
-    expect(screen.getByText("−12.5 XLM")).toBeTruthy();
+    await waitFor(() => expect(screen.getByText(/Received from/)).toBeTruthy());
+    expect(screen.getByText("+100 XLM")).toBeTruthy();
+    expect(screen.getByText(/Sent to/)).toBeTruthy();
+    expect(screen.getByText("−2.5 XLM")).toBeTruthy();
   });
 
-  it("shows the empty state for an unfunded account", async () => {
-    mockHorizon(() => ({ status: 404, body: {} }));
+  it("shows the empty state for a fresh wallet", async () => {
+    mockSdk.getRecentTransfers.mockResolvedValue([]);
     const screen = await wrap(<ActivityList walletAddress={ADDR} />);
     await waitFor(() => expect(screen.getByText("No activity yet")).toBeTruthy());
   });

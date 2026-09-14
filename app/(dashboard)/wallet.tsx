@@ -22,7 +22,6 @@ export default function WalletScreen() {
     await Promise.all([
       qc.invalidateQueries({ queryKey: walletKeys.state(walletAddress) }),
       qc.invalidateQueries({ queryKey: walletKeys.txs(walletAddress) }),
-      qc.invalidateQueries({ queryKey: walletKeys.exists(walletAddress) }),
     ]);
     setRefreshing(false);
   };

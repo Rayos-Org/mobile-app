@@ -1,11 +1,11 @@
-import { Linking, Share, StyleSheet, View } from "react-native";
+import { Share, StyleSheet, View } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { Button, Sheet, Text, useToast } from "@/components/ui";
 import { useTheme } from "@/hooks/useTheme";
-import { FRIENDBOT_URL } from "@/lib/config";
+import { useFaucet } from "@/hooks/useWallet";
 
-/** Receive — full address, copy/share, and a Friendbot shortcut for testnet. */
+/** Receive — full address, copy/share, and the relay testnet faucet. */
 export function ReceiveSheet({
   open,
   onClose,
@@ -17,6 +17,7 @@ export function ReceiveSheet({
 }) {
   const { colors, radius } = useTheme();
   const toast = useToast();
+  const faucet = useFaucet();
 
   return (
     <Sheet
@@ -67,9 +68,20 @@ export function ReceiveSheet({
         variant="ghost"
         fullWidth
         icon={<Ionicons name="water-outline" size={16} color={colors.mutedForeground} />}
-        onPress={() => Linking.openURL(`${FRIENDBOT_URL}?addr=${walletAddress}`)}
+        loading={faucet.isPending}
+        onPress={async () => {
+          try {
+            const res = await faucet.mutateAsync(walletAddress);
+            toast.success("Testnet XLM received", `${Number(res.amount) / 1e7} XLM`);
+          } catch (err) {
+            toast.error(
+              "Faucet failed",
+              err instanceof Error ? err.message : "Try again in a minute"
+            );
+          }
+        }}
       >
-        Get testnet XLM from Friendbot
+        Get 100 testnet XLM from the faucet
       </Button>
     </Sheet>
   );

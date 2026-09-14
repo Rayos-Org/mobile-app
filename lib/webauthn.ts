@@ -2,11 +2,12 @@ import * as Crypto from "expo-crypto";
 import type { PasskeyAssertion, PasskeyRegistrationOptions } from "@rayos/wallet-sdk";
 import { api } from "./api";
 import { config } from "./config";
-import { signTransaction } from "@/native/passkey-adapter";
+import { getAssertion } from "@/native/passkey-adapter";
 
 /**
- * WebAuthn ceremonies against relay-backend. These mirror the fetch calls in
- * web-dashboard so both clients hit identical endpoints/payloads.
+ * WebAuthn ceremonies against relay-backend — identical endpoints/payloads to
+ * web-dashboard. Transaction signing does NOT go through here: the SDK signs
+ * Soroban auth entries with the passkey directly (see walletSdk.transfer).
  */
 
 export interface RegistrationVerifyResponse {
@@ -20,7 +21,6 @@ export interface AssertionOptions {
   rpId?: string;
   timeout?: number;
   userVerification?: "required" | "preferred" | "discouraged";
-  allowCredentials?: { id: string; type: "public-key" }[];
 }
 
 export function newUserHandle(): string {
@@ -48,19 +48,25 @@ export async function getAssertionOptions(userHandle: string) {
   });
 }
 
+export async function verifyAssertion(userHandle: string, response: unknown) {
+  return api<{ verified: boolean; credentialId: string }>("/webauthn/assert/verify", {
+    method: "POST",
+    body: { userHandle, response },
+  });
+}
+
 /**
- * Prompt the platform authenticator and return the assertion. `credentialId`
- * may be omitted for discoverable-credential sign-in (the OS shows a picker).
+ * Relay-challenged passkey assertion (sign-in / off-chain authorisations).
+ * `credentialId` may be omitted for discoverable sign-in (OS shows a picker).
  */
 export async function assertWithPasskey(
   userHandle: string,
-  credentialId?: string,
-  purpose = "auth"
+  credentialId?: string
 ): Promise<{ assertion: PasskeyAssertion; challenge: string }> {
   const options = await getAssertionOptions(userHandle);
-  const assertion = await signTransaction(purpose, {
+  const assertion = await getAssertion({
     challenge: options.challenge,
-    credentialId: credentialId ?? "",
+    credentialId,
     rpId: options.rpId ?? config.WEBAUTHN_RP_ID,
     timeout: options.timeout,
     userVerification: options.userVerification,

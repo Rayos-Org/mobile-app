@@ -1,6 +1,11 @@
 import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import type { StorageAdapter } from "@rayos/wallet-sdk";
+/** Minimal async key/value interface used by the auth store and theme prefs. */
+export interface StorageAdapter {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+  removeItem(key: string): Promise<void>;
+}
 
 // expo-secure-store keys must match /^[a-zA-Z0-9._-]+$/
 function sanitizeKey(key: string): string {

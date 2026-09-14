@@ -6,7 +6,7 @@ import { Button, Card, PasskeyPrompt, Screen, Text, useToast } from "@/component
 import { OnboardingHeader } from "@/components/layout/OnboardingHeader";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuthStore } from "@/store/auth";
-import { assertWithPasskey, lookupWallet, newUserHandle } from "@/lib/webauthn";
+import { assertWithPasskey, lookupWallet, newUserHandle, verifyAssertion } from "@/lib/webauthn";
 import { errorMessage } from "@/lib/api";
 import { isPasskeySupported, PasskeyCancelledError } from "@/native/passkey-adapter";
 
@@ -31,7 +31,10 @@ export default function LoginScreen() {
       // The relay scopes challenges by userHandle; reuse the one from registration
       // when we have it, otherwise any unique handle works for discoverable sign-in.
       const handle = storedHandle ?? newUserHandle();
-      const { assertion } = await assertWithPasskey(handle, undefined, "login");
+      const { assertion } = await assertWithPasskey(handle, undefined);
+      // The relay verifies the signature against the passkey's stored public key.
+      const verify = await verifyAssertion(handle, assertion);
+      if (!verify.verified) throw new Error("Passkey verification failed");
       const { walletAddress } = await lookupWallet(assertion.id);
       setAuth({ walletAddress, credentialId: assertion.id, userHandle: handle });
       toast.success("Welcome back");

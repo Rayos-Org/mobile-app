@@ -12,7 +12,7 @@ import { useAuthStore } from "@/store/auth";
 import { walletSdk } from "@/lib/sdk-client";
 import { getRegistrationOptions, newUserHandle, verifyRegistration } from "@/lib/webauthn";
 import { errorMessage } from "@/lib/api";
-import { EXPLORER_URL, FRIENDBOT_URL } from "@/lib/config";
+import { EXPLORER_URL } from "@/lib/config";
 import { isPasskeySupported, PasskeyCancelledError } from "@/native/passkey-adapter";
 import { alpha } from "@/lib/theme";
 
@@ -34,6 +34,7 @@ export default function CreateWalletScreen() {
     address: string;
     credentialId: string;
     userHandle: string;
+    txHash: string;
   } | null>(null);
 
   const handleCreatePasskey = async () => {
@@ -49,14 +50,19 @@ export default function CreateWalletScreen() {
       const userHandle = newUserHandle();
       const options = await getRegistrationOptions(userHandle, name.trim());
 
-      const salt = new Uint8Array(32);
-      Crypto.getRandomValues(salt);
-      const { address, credential } = await walletSdk.createWallet(options, salt);
+      // 1. Platform passkey (secure enclave). The SDK extracts the P-256 key.
+      const credential = await walletSdk.registerPasskey(options);
 
+      // 2. Relay verifies the attestation and stores the key for sign-in.
       const verify = await verifyRegistration(userHandle, credential);
       if (!verify.verified) throw new Error("The relay could not verify your passkey.");
 
-      setResult({ address, credentialId: verify.credentialId ?? credential.id, userHandle });
+      // 3. Relay deploys the GuardianWallet contract on Stellar testnet (sponsored).
+      const salt = new Uint8Array(32);
+      Crypto.getRandomValues(salt);
+      const { address, txHash } = await walletSdk.deployWallet(credential, salt);
+
+      setResult({ address, credentialId: credential.id, userHandle, txHash });
       setStep(3);
       toast.success("Wallet deployed", "Your passkey-secured wallet is live on testnet.");
     } catch (err) {
@@ -213,24 +219,22 @@ export default function CreateWalletScreen() {
                 },
               ]}
             >
-              <Ionicons name="water-outline" size={18} color={colors.warning} />
+              <Ionicons name="cube-outline" size={18} color={colors.warning} />
               <View style={{ flex: 1 }}>
-                <Text variant="small">
-                  Fund your wallet with testnet XLM from Friendbot to activate it.
-                </Text>
+                <Text variant="small">Deployment transaction (Stellar testnet)</Text>
                 <Button
                   size="sm"
                   variant="ghost"
                   style={{ marginTop: 4, marginLeft: -12 }}
-                  onPress={() => Linking.openURL(`${FRIENDBOT_URL}?addr=${result.address}`)}
+                  onPress={() => Linking.openURL(`${EXPLORER_URL}/tx/${result.txHash}`)}
                 >
-                  Open Friendbot →
+                  {`${result.txHash.slice(0, 10)}… on Stellar Expert →`}
                 </Button>
               </View>
             </View>
 
             <Badge variant="success" dot>
-              Passkey verified
+              Passkey verified · contract live on testnet
             </Badge>
 
             <Button

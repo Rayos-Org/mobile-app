@@ -40,4 +40,3 @@ export const config: AppConfig = parsed.data;
 export const NATIVE_XLM_CONTRACT_ID = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
 
 export const EXPLORER_URL = "https://stellar.expert/explorer/testnet";
-export const FRIENDBOT_URL = "https://friendbot.stellar.org";
